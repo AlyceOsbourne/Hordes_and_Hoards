@@ -142,19 +142,19 @@ class Game:
         print("System events registered.")
 
     def import_game_modules(self):
+        # this may be abusing python a little bit, but chose this method of importing modules
         print("Importing game modules...")
         module_dir = os.path.join(os.getcwd(), 'game_modules')
         if not os.path.exists(module_dir):
             os.mkdir(module_dir)
         self.game_modules = []
-        for module in os.listdir(os.path.join(os.getcwd(), 'game_modules')):
-            if module.endswith(".py") and not module.startswith("__"):
-                # if module not already imported, import it
-                if module not in sys.modules:
-                    print(f"Importing {module}...")
-                    module = importlib.import_module(f"game_modules.{module[:-3]}")
-                    self.game_modules.append(module)
-                    print(f"{module.__name__} imported.")
+        # walk the directory and search one folder deep to see if there is a module called module.py
+        for root, dirs, files in os.walk(module_dir):
+            for file_name in files:
+                if file_name == "__init__.py":
+                    if file_name not in sys.modules:
+                        print(f"Importing module: {file_name}")
+                        self.game_modules.append(importlib.import_module(f"game_modules.{os.path.basename(root)}"))
         print(f"Imported {len(self.game_modules)} game modules.")
 
     def run(self):
