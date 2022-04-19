@@ -17,5 +17,10 @@ So get your hero Bonking tools ready and let's get hoarding!
 Hoards and Hordes is an anti roguelike where you take control of the poor monsters who are constantly slain by greedy adventurers. 
 Swap between Hack And Slash Mode to Big Boss Mode to control your minions.
 Customize your Big Boss and Your Horde by spending your Hoard.
-Defend Randomly generated Dungeons
+Defend Randomly generated Dungeons.
+
+
+###### Idea Map
+<
+https://gitmind.com/app/doc/5ba10238059>
 

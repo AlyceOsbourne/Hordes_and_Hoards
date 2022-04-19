@@ -1,6 +1,7 @@
 import importlib
 import os
 import sys
+from abc import ABC, abstractmethod
 from itertools import count
 from functools import partial
 import pygame
@@ -38,6 +39,7 @@ class EventHandler:
         event_id = next(self.custom_event_ids)
         self.custom_events[event_name] = event_id
         self.handlers[event_id] = []
+        return event_name, event_id,
 
     def delete_custom_event(self, event_name: str):
         del self.custom_events[event_name]
@@ -50,7 +52,10 @@ class EventHandler:
         return None
 
     def get_custom_event_id(self, event_name):
-        return self.custom_events[event_name]
+        if event_name in self.custom_events:
+            return self.custom_events[event_name]
+        else:
+            return None
 
     def __call__(self, event_type):
         def decorator(handler):
@@ -116,45 +121,73 @@ class AssetManager:
         self.assets["fonts"][os.path.basename(path)] = partial(pygame.font.Font, path)
 
 
+class GameStateHandler:
+    def __init__(self):
+        print("Initializing game state handler...")
+        self.states = {}
+
+        print("Game state handler initialized.")
+
+    def change_state(self, state_name: str, state):
+        self.states[state_name] = state
+
+    def unregister_state(self, state_name: str):
+        del self.states[state_name]
+
+    def get_state(self, state_name: str):
+        return self.states[state_name]
+
+
 class Game:
 
-    def __init__(self, width, height, title, fps=60, asset_path=None):
+    def __init__(self, game_event_handler, asset_manager, game_state_handler, width=800, height=600, title="Game",
+                 fps=60):
+        if game_event_handler is None or asset_manager is None:
+            raise ValueError("Game must be initialized with a game event handler and asset manager.")
+
+        self.game_event_handler = game_event_handler
+        self.asset_manager = asset_manager
+        self.game_state_handler = game_state_handler
+
         self.width = width
         self.height = height
         self.title = title
         self.fps = fps
         self.screen = pygame.display.set_mode((self.width, self.height))
-
         self.clock = pygame.time.Clock()
 
-        self.game_event_handler = EventHandler()
-        self.asset_manager = AssetManager(asset_path if asset_path else os.path.join(os.getcwd(), 'assets'))
-
+        self.sprites = pygame.sprite.Group()
         self.register_system_events()
-
         self.game_modules = []
         self.import_game_modules()
 
     def register_system_events(self):
         print("Registering system events...")
-        self.game_event_handler.register(pygame.QUIT, lambda event:
-        print(f"Quitting {self.title}") or pygame.quit() or quit(1))
+        self.game_event_handler.register(
+            pygame.QUIT,
+            lambda event:
+            print(f"Quitting {self.title}") or
+            pygame.quit() or
+            quit(1))
         print("System events registered.")
 
     def import_game_modules(self):
-        # this may be abusing python a little bit, but chose this method of importing modules
         print("Importing game modules...")
         module_dir = os.path.join(os.getcwd(), 'game_modules')
         if not os.path.exists(module_dir):
             os.mkdir(module_dir)
         self.game_modules = []
         # walk the directory and search one folder deep to see if there is a module called module.py
-        for root, dirs, files in os.walk(module_dir):
-            for file_name in files:
-                if file_name == "__init__.py":
-                    if file_name not in sys.modules:
-                        print(f"Importing module: {file_name}")
-                        self.game_modules.append(importlib.import_module(f"game_modules.{os.path.basename(root)}"))
+        for folder in os.listdir(module_dir):
+            if os.path.isdir(os.path.join(module_dir, folder)):
+                for file in os.listdir(os.path.join(module_dir, folder)):
+                    if file == "__init__.py" and file not in sys.modules:
+                        try:
+                            module = importlib.import_module(f"game_modules.{folder}")
+                            self.game_modules.append(module)
+                            print(f"Imported game module: {module.__name__}")
+                        except Exception as e:
+                            print(f"Error importing module {folder}: {e}")
         print(f"Imported {len(self.game_modules)} game modules.")
 
     def run(self):
