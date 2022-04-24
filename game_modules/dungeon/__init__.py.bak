@@ -1,0 +1,46 @@
+from enum import Enum
+
+from pygame_core import get_handles
+import pygame
+import numpy as np
+import random
+
+event_handler, asset_manager, state_manager = get_handles()
+
+
+class TileType(Enum):
+    # wall tiles
+    AIR = 0
+    WALL = 1
+    FLOOR = 2
+
+
+class Tile:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.potential = [tile for tile in TileType]
+        self.tile_type = TileType.AIR
+
+    def drop_potential(self, *tile_type):
+        for tile in tile_type:
+            if tile in self.potential:
+                self.potential.remove(tile)
+        self.collapse()
+
+    def collapse(self):
+        if self.entropy == 1:
+            self.tile_type = self.potential[0]
+
+    @property
+    def entropy(self):
+        return len(self.potential)
+
+
+class Rule:
+    def __init__(self, tile_type, domain):
+        self.tile_type = tile_type
+        self.domain = domain
+
+
+

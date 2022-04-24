@@ -1,10 +1,9 @@
 import importlib
-import inspect
 import os
-import sys
-from abc import ABC, abstractmethod
-from itertools import count
+from abc import ABC
 from functools import partial
+from itertools import count
+
 import pygame
 
 pygame.init()
@@ -32,14 +31,24 @@ class EventHandler:
         if event_type in self.handlers:
             self.handlers[event_type].remove(handler)
 
-    def handle(self, event):
+    def handle(self, event, event_data=None):
+        if isinstance(event, str):
+            event = self.custom_events[event]
+        if isinstance(event, int):
+            if event_data is not None:
+                event = pygame.event.Event(event, event_data)
+            else:
+                event = pygame.event.Event(event)
         if event.type in self.handlers:
             for handler in self.handlers[event.type]:
                 handler(event)
 
     def handle_events(self, events):
         for event in events:
-            self.handle(event)
+            if not isinstance(event, tuple):
+                self.handle(event)
+            else:
+                self.handle(event[0], event[1])
 
     def create_event_type(self, event_name: str):
         event_id = next(self.custom_event_ids)
@@ -73,7 +82,6 @@ class EventHandler:
 
 
 class AssetManager:
-
     """
     Handles the loading of assets from disk and caches them ready for use
     """
@@ -134,6 +142,7 @@ class AssetManager:
 
 class GameStateHandler:
     """This is the object we will save and load from disk to act as the save game, maybe?"""
+
     def __init__(self):
         print("Initializing game state handler...")
         self.states = {}
@@ -167,19 +176,25 @@ class GameStateHandler:
 
 
 class Game:
-
     """Core game class, has the event handler, the state handler, and asset handler references,
-    a built-in plugin system with default function callers (for registering events and states
-    )"""
+    a built-in plugin system with default function callers (for registering events and states, etc.)
+    One of the ideas of this class is its standalone, and one shouldn't need to access anything besides the handles
+    to send and receive events and states.
+    """
 
-    def __init__(self, game_event_handler, asset_manager, game_state_handler, width=800, height=600, title="Game",
-                 fps=60):
-        if game_event_handler is None or asset_manager is None:
-            raise ValueError("Game must be initialized with a game event handler and asset manager.")
-
-        self.game_event_handler = game_event_handler
-        self.asset_manager = asset_manager
-        self.game_state_handler = game_state_handler
+    def __init__(self, *,
+                 title="Game",
+                 width=800,
+                 height=600,
+                 fps=60,
+                 game_event_handler=None,
+                 asset_manager=None,
+                 game_state_handler=None
+                 ):
+        print(f"Initializing {title}...")
+        self.game_event_handler = game_event_handler if game_event_handler else EventHandler()
+        self.asset_manager = asset_manager if asset_manager else AssetManager()
+        self.game_state_handler = game_state_handler if game_state_handler else GameStateHandler()
 
         self.width = width
         self.height = height
@@ -191,10 +206,12 @@ class Game:
         self.sprites = pygame.sprite.Group()
         self.register_system_events()
         self.game_modules = []
+        self.modules_loaded = False
 
-    # function to check "game_modules" folder for subfolders containing __init__.py files
-    # and import them and add them to the game_modules list
     def load_game_modules(self):
+        # check to see if sub directory game_modules exists, if not create
+        if not os.path.exists("game_modules"):
+            os.makedirs("game_modules")
         for folder in os.listdir(os.path.join(os.getcwd(), "game_modules")):
             if folder.startswith("."):
                 continue
@@ -202,11 +219,11 @@ class Game:
                 continue
             if not os.path.exists(os.path.join(os.getcwd(), "game_modules", folder, "__init__.py")):
                 continue
-            # if not already loaded
             if folder not in [module.__name__ for module in self.game_modules]:
                 print(f"Loading game module: {folder}")
                 module = importlib.import_module(f"game_modules.{folder}")
                 for func_name in [
+                    "init",
                     "register_events",
                     "register_states"
                 ]:
@@ -214,20 +231,29 @@ class Game:
                         print(f"Calling {func_name} for module {module.__name__}")
                         getattr(module, func_name)()
                 self.game_modules.append(module)
-            print(f"Loaded {len(self.game_modules)} game modules.")
+        print(f"Loaded {len(self.game_modules)} game modules.")
+        self.modules_loaded = True
 
     def register_system_events(self):
         self.game_event_handler.register(
             pygame.QUIT, lambda event: print(f"Quitting {self.title}") or pygame.quit() or quit(1)
         )
 
+    def set_default_states(self):
+        self.game_state_handler.register_state("scene", "menus.SplashScreen")
+
     def run(self):
-        self.load_game_modules()
+        if not self.modules_loaded:
+            self.load_game_modules()
         while True:
-            self.game_event_handler.handle_events(pygame.event.get())
-            self.update()
-            self.render()
-            self.clock.tick(self.fps)
+            try:
+                self.game_event_handler.handle_events(pygame.event.get())
+                self.update()
+                self.render()
+                self.clock.tick(self.fps)
+            except Exception as e:
+                print("(╯°□°）╯︵ ┻━┻")
+                print("Something Broke....", e, sep="\n")
 
     def update(self):
         for game_module in self.game_modules:
@@ -235,7 +261,6 @@ class Game:
                 game_module.update()
 
     def render(self):
-        # clear screen, draw sprites, update screen
         self.screen.fill((0, 0, 0))
         self.sprites.draw(self.screen)
         for module in self.game_modules:
@@ -243,13 +268,69 @@ class Game:
                 module.render(self.screen)
         pygame.display.flip()
 
-    # function to create a decorator for registering functions as event handlers using the event handler class
     def get_event_handler(self):
         return self.game_event_handler.__call__
 
+    @property
+    def title(self):
+        return self._title
 
-game = Game(EventHandler(), AssetManager(), GameStateHandler(), title="Hordes and Hoards")
+    @title.setter
+    def title(self, value):
+        self._title = value
+
+    @property
+    def width(self):
+        return self._width
+
+    @width.setter
+    def width(self, value):
+        self._width = value
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, value):
+        self._height = value
+
+    @property
+    def handles(self):
+        return self.game_event_handler, self.asset_manager, self.game_state_handler
+
+    # a function to create a markdown file for the docs in each game module, its functions, classes and class
+    # functions (done so recursively) function names  and args, kwargs etc are collected and written to the markdown
+    # file classes are written to the markdown file with their functions and class functions the markdown file is
+    # then added to the docs folder in the game module indents children for readability
+    def create_docs(self):
+        import inspect
+        for game_module in self.game_modules:
+            print(f"Creating docs for {game_module.__name__}")
+            with open(f"docs/{game_module.__name__}.md", "w") as f:
+                f.write(f"# {game_module.__name__}\n\n")
+                f.write(f"## Functions\n\n")
+                for func_name, func in inspect.getmembers(game_module, inspect.isfunction):
+                    f.write(f"### {func_name}\n\n")
+                    f.write(f"```python\n{func.__name__}({inspect.signature(func)}\n```\n\n")
+                    f.write(f"```{func.__doc__}\n```\n")
+                f.write(f"## Classes\n\n")
+                for class_name, class_ in inspect.getmembers(game_module, inspect.isclass):
+                    f.write(f"### {class_name}\n\n")
+                    f.write(f"```python\n{class_.__name__}({inspect.signature(class_.__init__)}\n```\n\n")
+                    f.write(f"```{class_.__doc__}\n```\n")
+                    f.write(f"## Class Functions\n\n")
+                    for func_name, func in inspect.getmembers(class_, inspect.isfunction):
+                        f.write(f"### {func_name}\n\n")
+                        f.write(f"```python\n{func.__name__}({inspect.signature(func)}\n```\n\n")
+                        f.write(f"```{func.__doc__}\n```\n")
+            print(f"Finished creating docs for {game_module.__name__}")
+
+
+
+
+game = Game()
 
 
 def get_handles():
-    return game.game_event_handler, game.asset_manager, game.game_state_handler
+    return game.handles
