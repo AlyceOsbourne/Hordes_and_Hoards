@@ -2,6 +2,7 @@ import random
 from collections import Counter
 from collections import deque
 from enum import Enum
+from functools import cache
 
 
 class Direction(Enum):
@@ -215,6 +216,24 @@ class NodeGrid:
 
     def generate(self):
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
+        # set the edges potential to void
+        for x in range(self.width):
+            grid[x][0].potential = {Tiles.VOID}
+            self.propagate_node(grid[x][0], grid)
+            grid[x][-1].potential = {Tiles.VOID}
+            self.propagate_node(grid[x][-1], grid)
+        for y in range(self.height):
+            grid[0][y].potential = {Tiles.VOID}
+            self.propagate_node(grid[0][y], grid)
+            grid[-1][y].potential = {Tiles.VOID}
+            self.propagate_node(grid[-1][y], grid)
+
+        # select a random node and set to floor
+        node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
+        while Tiles.FLOOR not in node.potential:
+            node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
+        node.potential = {Tiles.FLOOR}
+        self.propagate_node(node, grid)
         while (node := self.get_lowest_entropy(grid)) is not None:
             self.print_grid(grid)
             if node.collapse():
@@ -265,39 +284,38 @@ class NodeGrid:
                     seen.add(adjacent)
                     for potential in potentials:
                         adjacent.constrain_potential(potential, direction)
-                    queue.appendleft((self.get_adjacents(adjacent, grid), adjacent.potential))
+                    if adjacent.is_collapsed():
+                        queue.appendleft((self.get_adjacents(adjacent, grid), adjacent.potential))
 
     def get_adjacents(self, node, grid):
         # get all of the nodes around the input node
-        adjacents = []
         for direction in [Direction.North, Direction.East, Direction.South, Direction.West]:
             adj_x, adj_y = node.x + direction.x, node.y + direction.y
-            if adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height:
-                continue
-            adjacents.append((grid[adj_x][adj_y], direction))
-        return adjacents
+            if not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height):
+                yield grid[adj_x][adj_y], direction
 
 
 if __name__ == "__main__":
     # this sample string defines the adjacency rules
     sample_string = "\n".join([
-    "░░░░░░",
-    "░░░░░░",
-    "░╔══╗░",
-   " ░║▓▓║░",
-    "░║▓▓║░",
-    "░╚══╝░",
-    "░░░░░░",
-    "░░░░░░"
-
+        "░░░░░░░░░░░",
+        "░╔═══════╗░",
+        "░║▓▓▓▓▓▓▓║░",
+        "░║▓▓▓▓▓▓▓║░",
+        "░║▓▓▓▓▓▓▓║░",
+        "░║▓▓▓▓▓▓▓║░",
+        "░║▓▓▓▓▓▓▓║░",
+        "░║▓▓▓▓▓▓▓║░",
+        "░╚═══════╝░",
+        "░░░░░░░░░░░"
     ]
     )
 
     # the sample breaks down the sample string into adjacency rules
-    sample = Sample(sample_string, directions=[Direction.North, Direction.East, Direction.South, Direction.West])
+    sample = Sample(sample_string)
     sample.print_rules()
 
-    nodegrid = NodeGrid((20, 20), sample, seed=random.randint(0, 10000))
+    nodegrid = NodeGrid((12, 12), sample, seed=random.randint(0, 10000))
     nodegrid.start_generation()
     sample.print_rules()
     nodegrid.print_grid(nodegrid.grid)
