@@ -3,18 +3,34 @@ from collections import Counter
 from collections import deque
 from enum import Enum
 from functools import cache
+import numba
 
 
 class Direction(Enum):
     # relative x, y
     North = (-1, 0), "↑"
+    North_X2 = (-2, 0), "↑↑"
+
     South = (1, 0), "↓"
+    South_X2 = (2, 0), "↓↓"
+
     East = (0, 1), "→"
+    East_X2 = (0, 2), "→→"
+
     West = (0, -1), "←"
+    West_X2 = (0, -2), "←←"
+
     North_East = (-1, 1), "↗"
+    North_East_X2 = (-2, 2), "↗↗"
+
     North_West = (-1, -1), "↖"
+    North_West_X2 = (-2, -2), "↖↖"
+
     South_East = (1, 1), "↘"
+    South_East_X2 = (2, 2), "↘↘"
+    
     South_West = (1, -1), "↙"
+    South_West_X2 = (2, -2), "↙↙"
 
     def __new__(cls, value: tuple[int, int], char):
         obj = object.__new__(cls)
@@ -139,16 +155,24 @@ class Sample:
                         # todo make the wrap take the difference between the two and use that for the offset
                         if adj_x < 0:
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            adj_x = len(tiles) - 1
+                            difference = abs(adj_x-len(tiles))
+                            adj_x = -difference
+                            # adj_x = len(tiles) - 1
                         if adj_y < 0:
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            adj_y = len(tiles[x]) - 1
+                            difference = abs(adj_y-len(tiles[x]))
+                            adj_y = -difference
+                            # adj_y = len(tiles[x]) - 1
                         if adj_x >= len(tiles):
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            adj_x = 0
+                            difference = abs(adj_x-len(tiles))
+                            adj_x = difference
+                            # adj_x = 0
                         if adj_y >= len(tiles[x]):
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            adj_y = 0
+                            difference = abs(adj_y-len(tiles[x]))
+                            adj_y = difference
+                            # adj_y = 0
                     else:
                         # if out of bounds continue
                         if adj_x < 0 or adj_y < 0 or adj_x >= len(tiles) or adj_y >= len(tiles[x]):
@@ -208,32 +232,37 @@ class NodeGrid:
         self.grid = None
         random.seed(seed if seed is not None else 0)
 
-    def start_generation(self):
+    def start_generation(self, force_initial_states = True):
         grid = None
         while grid is None:
-            grid = self.generate()
+            grid = self.generate(force_initial_states)
         self.grid = grid
 
-    def generate(self):
+    def generate(self, force_initial_states=True):
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
-        # set the edges potential to void
-        for x in range(self.width):
-            grid[x][0].potential = {Tiles.VOID}
-            self.propagate_node(grid[x][0], grid)
-            grid[x][-1].potential = {Tiles.VOID}
-            self.propagate_node(grid[x][-1], grid)
-        for y in range(self.height):
-            grid[0][y].potential = {Tiles.VOID}
-            self.propagate_node(grid[0][y], grid)
-            grid[-1][y].potential = {Tiles.VOID}
-            self.propagate_node(grid[-1][y], grid)
 
-        # select a random node and set to floor
-        node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
-        while Tiles.FLOOR not in node.potential:
+        # this section forces some states to get more desirable results, works without it
+        ################################################################################################################
+        if force_initial_states:
+            for x in range(self.width):
+                grid[x][0].potential = {Tiles.VOID}
+                self.propagate_node(grid[x][0], grid)
+                grid[x][-1].potential = {Tiles.VOID}
+                self.propagate_node(grid[x][-1], grid)
+            for y in range(self.height):
+                grid[0][y].potential = {Tiles.VOID}
+                self.propagate_node(grid[0][y], grid)
+                grid[-1][y].potential = {Tiles.VOID}
+                self.propagate_node(grid[-1][y], grid)
+
             node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
-        node.potential = {Tiles.FLOOR}
-        self.propagate_node(node, grid)
+            while Tiles.FLOOR not in node.potential:
+                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
+            node.potential = {Tiles.FLOOR}
+            self.propagate_node(node, grid)
+
+        ################################################################################################################
+
         while (node := self.get_lowest_entropy(grid)) is not None:
             self.print_grid(grid)
             if node.collapse():
@@ -298,16 +327,15 @@ class NodeGrid:
 if __name__ == "__main__":
     # this sample string defines the adjacency rules
     sample_string = "\n".join([
-        "░░░░░░░░░░░",
-        "░╔═══════╗░",
-        "░║▓▓▓▓▓▓▓║░",
-        "░║▓▓▓▓▓▓▓║░",
-        "░║▓▓▓▓▓▓▓║░",
-        "░║▓▓▓▓▓▓▓║░",
-        "░║▓▓▓▓▓▓▓║░",
-        "░║▓▓▓▓▓▓▓║░",
-        "░╚═══════╝░",
-        "░░░░░░░░░░░"
+        "░░░░░░░░░",
+        "░╔══╦══╗░",
+        "░║▓▓║▓▓║░",
+        "░║▓▓║▓▓║░",
+        "░╠══╬══╣░",
+        "░║▓▓║▓▓║░",
+        "░║▓▓║▓▓║░",
+        "░╚══╩══╝░",
+        "░░░░░░░░░"
     ]
     )
 
@@ -315,7 +343,7 @@ if __name__ == "__main__":
     sample = Sample(sample_string)
     sample.print_rules()
 
-    nodegrid = NodeGrid((15, 15), sample, seed=random.randint(0, 10000))
-    nodegrid.start_generation()
+    node_grid = NodeGrid((10, 10), sample, seed=random.randint(0, 10000))
+    node_grid.start_generation(True)
     sample.print_rules()
-    nodegrid.print_grid(nodegrid.grid)
+    node_grid.print_grid(node_grid.grid)
