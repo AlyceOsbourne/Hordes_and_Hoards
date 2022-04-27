@@ -315,7 +315,7 @@ if __name__ == "__main__":
     sample = Sample(sample_string)
     sample.print_rules()
 
-    nodegrid = NodeGrid((12, 12), sample, seed=random.randint(0, 10000))
+    nodegrid = NodeGrid((15, 15), sample, seed=random.randint(0, 10000))
     nodegrid.start_generation()
     sample.print_rules()
     nodegrid.print_grid(nodegrid.grid)
