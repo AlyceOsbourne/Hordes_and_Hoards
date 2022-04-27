@@ -326,8 +326,13 @@ class Game:
                         f.write(f"```{func.__doc__}\n```\n")
             print(f"Finished creating docs for {game_module.__name__}")
 
-
-
+    def test(self):
+        print(f"Starting tests for {self.title}")
+        print(f"{self.title} has {len(self.game_modules)} modules")
+        for game_module in self.game_modules:
+            if hasattr(game_module, "test"):
+                print(f"Testing {game_module.__name__}")
+                game_module.test()
 
 game = Game()
 

@@ -3,7 +3,6 @@ from collections import Counter
 from collections import deque
 from enum import Enum
 from functools import cache
-import numba
 
 
 class Direction(Enum):
@@ -324,7 +323,7 @@ class NodeGrid:
                 yield grid[adj_x][adj_y], direction
 
 
-if __name__ == "__main__":
+def test():
     # this sample string defines the adjacency rules
     sample_string = "\n".join([
         "░░░░░░░░░",
@@ -343,7 +342,7 @@ if __name__ == "__main__":
     sample = Sample(sample_string)
     sample.print_rules()
 
-    node_grid = NodeGrid((10, 10), sample, seed=random.randint(0, 10000))
+    node_grid = NodeGrid((20, 10), sample, seed=random.randint(0, 10000))
     node_grid.start_generation(True)
     sample.print_rules()
     node_grid.print_grid(node_grid.grid)
