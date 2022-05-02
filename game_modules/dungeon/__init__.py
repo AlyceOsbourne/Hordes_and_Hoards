@@ -2,35 +2,41 @@ import random
 from collections import Counter
 from collections import deque
 from enum import Enum
-from functools import cache
+from functools import wraps
+
+VERBOSE = False
+
+
+# decorator to time functions
+def timeit(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        import time
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} took {end - start:2f} seconds")
+        return result
+
+    return wrapper
 
 
 class Direction(Enum):
-    # relative x, y
     North = (-1, 0), "↑"
-    # North_X2 = (-2, 0), "↑↑"
 
     South = (1, 0), "↓"
-    # South_X2 = (2, 0), "↓↓"
 
     East = (0, 1), "→"
-    # East_X2 = (0, 2), "→→"
 
     West = (0, -1), "←"
-    # West_X2 = (0, -2), "←←"
 
-    North_East = (-1, 1), "↗"
-    # North_East_X2 = (-2, 2), "↗↗"
+    # North_East = (-1, 1), "↗"
 
-    North_West = (-1, -1), "↖"
-    # North_West_X2 = (-2, -2), "↖↖"
+    # North_West = (-1, -1), "↖"
 
-    South_East = (1, 1), "↘"
-    # South_East_X2 = (2, 2), "↘↘"
+    # South_East = (1, 1), "↘"
 
-    South_West = (1, -1), "↙"
-
-    # South_West_X2 = (2, -2), "↙↙"
+    # South_West = (1, -1), "↙"
 
     def __new__(cls, value: tuple[int, int], char):
         obj = object.__new__(cls)
@@ -58,7 +64,7 @@ class Direction(Enum):
         return self.value[1]
 
 
-class Tiles(Enum):
+class Tiles(Enum):  # I should remove these hard codings
     VOID = (0, "░")
 
     WALL_HORIZONTAL = (1, "═")
@@ -112,18 +118,21 @@ class Tiles(Enum):
 
 
 def parse(string):
-    """Takes a string and converts to a grid of tile types"""
     tile_set = []
-    print(f"Parsing \n{string}")
+    if VERBOSE:
+        print(f"Parsing \n{string}")
     for line in string.split("\n"):
-        print(f"Parsing line {line}")
+        if VERBOSE:
+            print(f"Parsing line {line}")
         tile_set.append([])
         for char in line:
             if char == " ":
                 continue
-            print(f"Parsing char {char}")
+            if VERBOSE:
+                print(f"Parsing char {char}")
             tile = Tiles.from_char(char)
-            print(f"Got tile {tile}")
+            if VERBOSE:
+                print(f"Got tile {tile}")
             if tile is None:
                 raise Exception(f"Invalid tile: {char}")
             tile_set[-1].append(tile)
@@ -134,53 +143,61 @@ class RuleSet:
     def __init__(self, sample_str, wrap=False, directions=None):
         self.sample_str = sample_str
         self.tiles = parse(self.sample_str)
-        # get the weights of each tile type
+        # get the weights of each tile tile_type
         self.weights = Counter([t for row in self.tiles for t in row])
         self.rules = self.calculate_adjacency_rules(self.tiles, wrap, directions)
 
     @staticmethod
     def calculate_adjacency_rules(tiles: list[list[Tiles]], wrap_around=True, directions: list[Direction] = None):
         rules = dict()
-        print(f"Rules: {rules}")
+        if VERBOSE:
+            print(f"Rules: {rules}")
         for x in range(len(tiles)):
             for y in range(len(tiles[x])):
-                print(f"Tile {tiles[x][y]} at {x}, {y}")
+                if VERBOSE:
+                    print(f"Tile {tiles[x][y]} at {x}, {y}")
                 if tiles[x][y] not in rules:
                     rules[tiles[x][y]] = {}
                 for _direction in directions if directions is not None else Direction:
-                    print(f"Checking direction {_direction}")
+                    if VERBOSE:
+                        print(f"Checking direction {_direction}")
                     adj_x, adj_y = (x + _direction.value[0], y + _direction.value[1])
-                    print(f"Adjacent tile at {adj_x}, {adj_y}")
+                    if VERBOSE:
+                        print(f"Adjacent tile at {adj_x}, {adj_y}")
                     if wrap_around:
                         # todo make the wrap take the difference between the two and use that for the offset
                         if adj_x < 0:
-                            print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                            if VERBOSE:
+                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
                             difference = abs(adj_x - len(tiles))
                             adj_x = -difference
                             # adj_x = len(tiles) - 1
                         if adj_y < 0:
-                            print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                            if VERBOSE:
+                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
                             difference = abs(adj_y - len(tiles[x]))
                             adj_y = -difference
                             # adj_y = len(tiles[x]) - 1
                         if adj_x >= len(tiles):
-                            print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                            if VERBOSE:
+                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
                             difference = abs(adj_x - len(tiles))
                             adj_x = difference
                             # adj_x = 0
                         if adj_y >= len(tiles[x]):
-                            print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                            if VERBOSE:
+                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
                             difference = abs(adj_y - len(tiles[x]))
                             adj_y = difference
                             # adj_y = 0
                     else:
-                        # if out of bounds continue
                         if adj_x < 0 or adj_y < 0 or adj_x >= len(tiles) or adj_y >= len(tiles[x]):
                             continue
                     if _direction not in rules[tiles[x][y]]:
                         rules[tiles[x][y]][_direction] = set()
                     adj = tiles[adj_x][adj_y]
-                    print(f"Adjacent tile is {adj}")
+                    if VERBOSE:
+                        print(f"Adjacent tile is {adj}")
                     rules[tiles[x][y]][_direction].add(adj)
         return rules
 
@@ -197,8 +214,8 @@ class RuleSet:
                     rule_str += r.char
                 print(f"\t\t{direction.char} -> {rule_str}")
 
-    def get_rule(self, type, direction):
-        return self.rules[type][direction]
+    def get_rule(self, tile_type, direction):
+        return self.rules[tile_type][direction]
 
 
 class Node:
@@ -220,7 +237,7 @@ class Node:
     def collapse(self):
         # shrink set to size 1
         if len(self.potential) > 1:
-            self.potential = {random.choice(list(self.potential)), }
+            self.potential = {random.choice(list(self.potential))}
             return True
         return False
 
@@ -232,11 +249,24 @@ class NodeGrid:
         self.grid = None
         random.seed(seed if seed is not None else 0)
 
-    def start_generation(self, force_initial_states=True):
+    @timeit
+    def start_generation(self, force_initial_states=True, max_iterations=100_000):
         grid = None
-        while grid is None:
+        iteration = 0
+        print("Starting Generation.")
+        while grid is None and iteration < max_iterations:
             grid = self.generate(force_initial_states)
-        self.grid = grid
+            iteration += 1
+            if VERBOSE:
+                print(f"Current Iteration: {iteration}")
+            else:
+                print(f"\rCurrent Iteration: {iteration}", end="")
+        print()
+        if grid is None:
+            print(f"Failed to generate grid after {iteration} iterations")
+        else:
+            print(f"Generation took {iteration} iterations")
+            self.grid = grid
 
     def generate(self, force_initial_states=True):
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
@@ -254,17 +284,15 @@ class NodeGrid:
                 self.propagate_node(grid[0][y], grid)
                 grid[-1][y].potential = {Tiles.VOID}
                 self.propagate_node(grid[-1][y], grid)
-
             node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
             while Tiles.FLOOR not in node.potential:
                 node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
             node.potential = {Tiles.FLOOR}
             self.propagate_node(node, grid)
-
         ################################################################################################################
-
         while (node := self.get_lowest_entropy(grid)) is not None:
-            self.print_grid(grid)
+            if VERBOSE:
+                self.print_grid(grid)
             if node.collapse():
                 self.propagate_node(node, grid)
             else:
@@ -331,7 +359,7 @@ class NodeGrid:
                         queue.appendleft((self.get_adjacents(adjacent, grid), adjacent.potential))
 
     def get_adjacents(self, node, grid):
-        # get all of the nodes around the input node
+        # get all the nodes around the input node
         for direction in [Direction.North, Direction.East, Direction.South, Direction.West]:
             adj_x, adj_y = node.x + direction.x, node.y + direction.y
             if not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height):
@@ -339,27 +367,46 @@ class NodeGrid:
 
 
 def test():
-    # this sample string defines the adjacency rules
     sample_string = "\n".join([
-        "░░░░░░░░░░░░░",
-        "░░░░╔═╦═╗░░░░",
-        "░░░░║▓║▓║░░░░",
-        "░╔══╝▓║▓╚══╗░",
-        "░║▓▓▓▓║▓▓▓▓║░",
-        "░╠════╬════╣░",
-        "░║▓▓▓▓║▓▓▓▓║░",
-        "░╚══╗▓║▓╔══╝░",
-        "░░░░║▓║▓║░░░░",
-        "░░░░╚═╩═╝░░░░",
-        "░░░░░░░░░░░░░",
+        "║║║░░║╚╩╝║╚╝║║║",
+        "╩╝║╔═╩═╦═╩═╗║╚╩",
+        "══╝║╔╗▓║▓╔╗║╚══",
+        "╗╔═╝╚╬╗║╔╬╝╚═╗╔",
+        "╝║▓╔╗╠╝║╚╣╔╗▓║╚",
+        "═╣▓╚╩╝▓║▓╚╩╝▓╠═",
+        "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
+        "╣╠═════╬═════╣╠",
+        "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
+        "═╣▓╔╦╗▓║▓╔╦╗▓╠═",
+        "░║▓╚╝╠╗║╔╣╚╝▓║░",
+        "░╚═╗╔╬╝║╚╬╗╔═╝░",
+        "══╗║╚╝▓║▓╚╝║╔══",
+        "╦╗║╚═╦═╩═╦═╝║╔╦",
+        "║║║░░║╔╦╗║╔╗║║║",
     ]
     )
 
-    # the sample breaks down the sample string into adjacency rules
-    sample = RuleSet(sample_string)
-    sample.print_rules()
+    sample_string_b = "\n".join([
+        "╔╝║░░║╚╩╝║╚╝║╚╗",
+        "╝░║╔═╩═╦═╩═╗║░╚",
+        "══╝║▓▓▓║▓▓▓║╚══",
+        "╗╔═╝▓▓▓║▓▓▓╚═╗╔",
+        "╝║▓╔╗▓▓║▓▓╔╗▓║╚",
+        "═╣▓╚╝▓▓║▓▓╚╝▓╠═",
+        "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
+        "╣╠═════╬═════╣╠",
+        "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
+        "═╣▓╔╗▓▓║▓▓╔╗▓╠═",
+        "░║▓╚╝▓▓║▓▓╚╝▓║░",
+        "░╚═╗▓▓▓║▓▓▓╔═╝░",
+        "══╗║▓▓▓║▓▓▓║╔══",
+        "╗░║╚═╦═╩═╦═╝║░╔",
+        "╚╗║░░║╔╦╗║╔╗║╔╝",
+    ]
+    )
 
+    sample = RuleSet(sample_string)
     node_grid = NodeGrid((10, 10), sample, seed=random.randint(0, 10000))
-    node_grid.start_generation(True)
     sample.print_rules()
+    node_grid.start_generation(True)
     node_grid.print_grid(node_grid.grid)
