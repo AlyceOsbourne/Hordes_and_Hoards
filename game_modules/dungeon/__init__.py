@@ -8,28 +8,29 @@ from functools import cache
 class Direction(Enum):
     # relative x, y
     North = (-1, 0), "↑"
-    North_X2 = (-2, 0), "↑↑"
+    # North_X2 = (-2, 0), "↑↑"
 
     South = (1, 0), "↓"
-    South_X2 = (2, 0), "↓↓"
+    # South_X2 = (2, 0), "↓↓"
 
     East = (0, 1), "→"
-    East_X2 = (0, 2), "→→"
+    # East_X2 = (0, 2), "→→"
 
     West = (0, -1), "←"
-    West_X2 = (0, -2), "←←"
+    # West_X2 = (0, -2), "←←"
 
     North_East = (-1, 1), "↗"
-    North_East_X2 = (-2, 2), "↗↗"
+    # North_East_X2 = (-2, 2), "↗↗"
 
     North_West = (-1, -1), "↖"
-    North_West_X2 = (-2, -2), "↖↖"
+    # North_West_X2 = (-2, -2), "↖↖"
 
     South_East = (1, 1), "↘"
-    South_East_X2 = (2, 2), "↘↘"
-    
+    # South_East_X2 = (2, 2), "↘↘"
+
     South_West = (1, -1), "↙"
-    South_West_X2 = (2, -2), "↙↙"
+
+    # South_West_X2 = (2, -2), "↙↙"
 
     def __new__(cls, value: tuple[int, int], char):
         obj = object.__new__(cls)
@@ -113,7 +114,7 @@ class Tiles(Enum):
 def parse(string):
     """Takes a string and converts to a grid of tile types"""
     tile_set = []
-    print(f"Parsing {string}")
+    print(f"Parsing \n{string}")
     for line in string.split("\n"):
         print(f"Parsing line {line}")
         tile_set.append([])
@@ -129,7 +130,7 @@ def parse(string):
     return tile_set
 
 
-class Sample:
+class RuleSet:
     def __init__(self, sample_str, wrap=False, directions=None):
         self.sample_str = sample_str
         self.tiles = parse(self.sample_str)
@@ -154,22 +155,22 @@ class Sample:
                         # todo make the wrap take the difference between the two and use that for the offset
                         if adj_x < 0:
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_x-len(tiles))
+                            difference = abs(adj_x - len(tiles))
                             adj_x = -difference
                             # adj_x = len(tiles) - 1
                         if adj_y < 0:
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_y-len(tiles[x]))
+                            difference = abs(adj_y - len(tiles[x]))
                             adj_y = -difference
                             # adj_y = len(tiles[x]) - 1
                         if adj_x >= len(tiles):
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_x-len(tiles))
+                            difference = abs(adj_x - len(tiles))
                             adj_x = difference
                             # adj_x = 0
                         if adj_y >= len(tiles[x]):
                             print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_y-len(tiles[x]))
+                            difference = abs(adj_y - len(tiles[x]))
                             adj_y = difference
                             # adj_y = 0
                     else:
@@ -201,7 +202,7 @@ class Sample:
 
 
 class Node:
-    def __init__(self, pos, ruleset: Sample):
+    def __init__(self, pos, ruleset: RuleSet):
         self.x, self.y = pos
         self.ruleset = ruleset
         self.potential = set([tile for tile in ruleset.rules.keys()])
@@ -225,13 +226,13 @@ class Node:
 
 
 class NodeGrid:
-    def __init__(self, size, ruleset: Sample, seed=None):
+    def __init__(self, size, ruleset: RuleSet, seed=None):
         self.width, self.height = size
         self.ruleset = ruleset
         self.grid = None
         random.seed(seed if seed is not None else 0)
 
-    def start_generation(self, force_initial_states = True):
+    def start_generation(self, force_initial_states=True):
         grid = None
         while grid is None:
             grid = self.generate(force_initial_states)
@@ -254,9 +255,9 @@ class NodeGrid:
                 grid[-1][y].potential = {Tiles.VOID}
                 self.propagate_node(grid[-1][y], grid)
 
-            node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
+            node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
             while Tiles.FLOOR not in node.potential:
-                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1) ]
+                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
             node.potential = {Tiles.FLOOR}
             self.propagate_node(node, grid)
 
@@ -290,17 +291,31 @@ class NodeGrid:
 
     @staticmethod
     def print_grid(grid):
+        # if collapse print char in green,
+        # if len > 1 print len in blue
+        # else print exclamation mark in red
+        # print row and column indices
+        colours = {
+            "red": '\033[91m',
+            "green": '\033[92m',
+            "blue": '\033[94m',
+            "end": '\033[0m'
+        }
+        print("\n  ", end="")
+        for y in range(len(grid[0])):
+            print(f"{y:>2}", end="")
+        print()
         for x in range(len(grid)):
+            print(f"{x:>2}", end=" ")
             for y in range(len(grid[x])):
-                node = grid[x][y]
-                potential = node.potential
-                if node.is_collapsed():
-                    tile = next(iter(potential)).char
+                if grid[x][y].is_collapsed():
+                    tile = next(iter(grid[x][y].potential))
+                    print(f"{colours['green']}{tile:^2}{colours['end']}", end="")
+                elif len(grid[x][y].potential) > 1:
+                    print(f"{colours['blue']}{grid[x][y].entropy():^2}{colours['end']}", end="")
                 else:
-                    tile = node.entropy()
-                print(f"{tile}", end="")
+                    print(f"{colours['red']}{'!':^2}{colours['end']}", end="")
             print()
-        print("\n\n")
 
     def propagate_node(self, node, grid):
         queue = deque(((self.get_adjacents(node, grid), node.potential),))
@@ -326,23 +341,25 @@ class NodeGrid:
 def test():
     # this sample string defines the adjacency rules
     sample_string = "\n".join([
-        "░░░░░░░░░",
-        "░╔══╦══╗░",
-        "░║▓▓║▓▓║░",
-        "░║▓▓║▓▓║░",
-        "░╠══╬══╣░",
-        "░║▓▓║▓▓║░",
-        "░║▓▓║▓▓║░",
-        "░╚══╩══╝░",
-        "░░░░░░░░░"
+        "░░░░░░░░░░░░░",
+        "░░░░╔═╦═╗░░░░",
+        "░░░░║▓║▓║░░░░",
+        "░╔══╝▓║▓╚══╗░",
+        "░║▓▓▓▓║▓▓▓▓║░",
+        "░╠════╬════╣░",
+        "░║▓▓▓▓║▓▓▓▓║░",
+        "░╚══╗▓║▓╔══╝░",
+        "░░░░║▓║▓║░░░░",
+        "░░░░╚═╩═╝░░░░",
+        "░░░░░░░░░░░░░",
     ]
     )
 
     # the sample breaks down the sample string into adjacency rules
-    sample = Sample(sample_string)
+    sample = RuleSet(sample_string)
     sample.print_rules()
 
-    node_grid = NodeGrid((20, 10), sample, seed=random.randint(0, 10000))
+    node_grid = NodeGrid((10, 10), sample, seed=random.randint(0, 10000))
     node_grid.start_generation(True)
     sample.print_rules()
     node_grid.print_grid(node_grid.grid)

@@ -327,12 +327,15 @@ class Game:
             print(f"Finished creating docs for {game_module.__name__}")
 
     def test(self):
+        if not self.modules_loaded:
+            self.load_game_modules()
         print(f"Starting tests for {self.title}")
         print(f"{self.title} has {len(self.game_modules)} modules")
         for game_module in self.game_modules:
             if hasattr(game_module, "test"):
                 print(f"Testing {game_module.__name__}")
                 game_module.test()
+
 
 game = Game()
 
