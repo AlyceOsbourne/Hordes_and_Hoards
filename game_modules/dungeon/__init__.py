@@ -6,106 +6,56 @@ from functools import wraps
 
 VERBOSE = False
 
-sample_string = "\n".join([
-    "║║║░░║╚╩╝║╚╝║║║",
-    "╩╝║╔═╩═╦═╩═╗║╚╩",
-    "══╝║╔╗▓║▓╔╗║╚══",
-    "╗╔═╝╚╬╗║╔╬╝╚═╗╔",
-    "╝║▓╔╗╠╝║╚╣╔╗▓║╚",
-    "═╣▓╚╩╝▓║▓╚╩╝▓╠═",
-    "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
-    "╣╠═════╬═════╣╠",
-    "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
-    "═╣▓╔╦╗▓║▓╔╦╗▓╠═",
-    "░║▓╚╝╠╗║╔╣╚╝▓║░",
-    "░╚═╗╔╬╝║╚╬╗╔═╝░",
-    "══╗║╚╝▓║▓╚╝║╔══",
-    "╦╗║╚═╦═╩═╦═╝║╔╦",
-    "║║║░░║╔╦╗║╔╗║║║",
-]
-)
+# ▓║▓═▓╗▓╔▓╝▓╚▓▓
+# ▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+# ▓▓╦▓╩▓╣▓╠▓╬▓▓▓
 
-sample_string_b = "\n".join([
-    "╔╝║░░║╚╩╝║╚╝║╚╗",
-    "╝░║╔═╩═╦═╩═╗║░╚",
-    "══╝║▓▓▓║▓▓▓║╚══",
-    "╗╔═╝▓▓▓║▓▓▓╚═╗╔",
-    "╝║▓╔╗▓▓║▓▓╔╗▓║╚",
-    "═╣▓╚╝▓▓║▓▓╚╝▓╠═",
-    "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
-    "╣╠═════╬═════╣╠",
-    "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
-    "═╣▓╔╗▓▓║▓▓╔╗▓╠═",
-    "░║▓╚╝▓▓║▓▓╚╝▓║░",
-    "░╚═╗▓▓▓║▓▓▓╔═╝░",
-    "══╗║▓▓▓║▓▓▓║╔══",
-    "╗░║╚═╦═╩═╦═╝║░╔",
-    "╚╗║░░║╔╦╗║╔╗║╔╝",
-]
-)
-
-sample_string_c = "\n".join([
-    "░░░░░░░░░░░░░░░░",
-    "░╔╗╔╗░╔══╗░╔══╗░",
-    "░╚╝╚╝░║░░║░║▓▓║░",
-    "░╔╗╔╗░║░░║░║▓▓║░",
-    "░╚╝╚╝░╚══╝░╚══╝░",
-    "░░░░░░░░░░░░░░░░",
-    "░╔═╦═╗░░░╔═╦═╗░░",
-    "░║░║░║╔╦╗║▓║▓║░░",
-    "░╠═╬═╣╠╬╣╠═╬═╣░░",
-    "░║░║░║╚╩╝║▓║▓║░░",
-    "░╚═╩═╝░░░╚═╩═╝░░",
-    "░╔══╦══╗╔══╦══╗░",
-    "░║╔═╩═╗║║╔═╬═╗║░",
-    "░║║▓▓▓║║║║╔╩╗║║░",
-    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░",
-    "░║║▓▓▓║║║║╚╦╝║║░",
-    "░║╚═╦═╝║║╚═╬═╝║░",
-    "░╚══╩══╝╚══╩══╝░",
-    "░░░╔╗╔╗░░╔╗╔╗░░░",
-    "░░░╚╩╩╝░░╚╣╠╝░░░",
-    "░░░╔╦╦╗░░╔╣╠╗░░░",
-    "░░░╚╝╚╝░░╚╝╚╝░░░",
-    "░░░╔═╗░░░░╔╗╔╗░░",
-    "░░░╚╦╝░░░░║╠╣║░░",
-    "░░░╔╩╗░░░░╚╝╚╝░░",
-    "░░░╚═╝░░░░░░░░░░",
-    "░░╔╗░░░░░░░╔╗░░░",
-    "░░╠╝░░░░░░░╚╣░░░",
-    "░╔╣░░╔═══╗░░╠╗░░",
-    "░╚╝╔╗╚═══╝╔╗╚╝░░",
-    "░░░╚╩╦╗░╔╦╩╝░░░░",
-    "╔═══╗╚╝░╚╝╔═══╗░",
-    "╚═══╝░░░░░╚═══╝░",
-    "░░╔╦╦╗░░░╔╗╔╗░░░",
-    "░░║╠╣║░░░╚╬╬╝░░░",
-    "░░╚╩╩╝░░░╔╬╬╗░░░",
-    "░░░░░░╔╗░╚╝╚╝░░░",
-    "░░░░░╔╝╚╗░░░░░░░",
-    "░░░░░╚╗╔╝░░░░░░░",
-    "░╔═╗░░╚╝░░╔═╗░░░",
-    "╔╝░╚╗░░░░╔╝▓╚╗░░",
-    "║░░░║░░░░║▓▓▓║░░",
-    "╚╗░╔╝░░░░╚╗▓╔╝░░",
-    "░╚═╝░░░░░░╚═╝░░░",
-    "░░░░░░░░░░░░░░░░",
-    "╔══════════════╗",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓╔╗╔╗▓▓▓▓╔╗╔╗▓║",
-    "║▓╚╬╬╝▓▓▓▓╚╩╩╝▓║",
-    "║▓╔╬╬╗▓▓▓▓╔╦╦╗▓║",
-    "║▓╚╝╚╝▓▓▓▓╚╝╚╝▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╚══════════════╝",
+sample = "\n".join([
+    "░░░░░░░░░░░░░░░░╔══════════════╗",
+    "░╔╗╔╗░╔══╗░╔══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╚╝╚╝░║░░║░║▓▓║░║▓╔╗╔╗▓▓▓▓╔╗╔╗▓║",
+    "░╔╗╔╗░║░░║░║▓▓║░║▓╚╬╬╝▓▓▓▓╚╩╩╝▓║",
+    "░╚╝╚╝░╚══╝░╚══╝░║▓╔╬╬╗▓▓▓▓╔╦╦╗▓║",
+    "░░░░░░░░░░░░░░░░║▓╚╝╚╝▓▓▓▓╚╝╚╝▓║",
+    "░╔═╦═╗░░░╔═╦═╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║░║░║╔╦╗║▓║▓║░░║▓║▓═▓╗▓╔▓╝▓╚▓▓║",
+    "░╠═╬═╣╠╬╣╠═╬═╣░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║░║░║╚╩╝║▓║▓║░░║▓▓╦▓╩▓╣▓╠▓╬▓▓▓║",
+    "░╚═╩═╝░░░╚═╩═╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╔══╦══╗╔══╦══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║╔═╩═╗║║╔═╬═╗║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║║▓▓▓║║║║╔╩╗║║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║║▓▓▓║║║║╚╦╝║║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║╚═╦═╝║║╚═╬═╝║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╚══╩══╝╚══╩══╝░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╔╗╔╗░░╔╗╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╚╩╩╝░░╚╣╠╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╔╦╦╗░░╔╣╠╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╚╝╚╝░░╚╝╚╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╔═╗░░░░╔╗╔╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╚╦╝░░░░║╠╣║░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╔╩╗░░░░╚╝╚╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╚═╝░░░░░░░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░╔╗░░░░░░░╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░╠╝░░░░░░░╚╣░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╔╣░░╔═══╗░░╠╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╚╝╔╗╚═══╝╔╗╚╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░╚╩╦╗░╔╦╩╝░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "╔═══╗╚╝░╚╝╔═══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "╚═══╝░░░░░╚═══╝░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░╔╦╦╗░░░╔╗╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░║╠╣║░░░╚╬╬╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░╚╩╩╝░░░╔╬╬╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░░░░╔╗░╚╝╚╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░░░╔╝╚╗░░░░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░░░╚╗╔╝░░░░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╔═╗░░╚╝░░╔═╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "╔╝░╚╗░░░░╔╝▓╚╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║░░░║░░░░║▓▓▓║░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "╚╗░╔╝░░░░╚╗▓╔╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╚═╝░░░░░░╚═╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░░░░░░░░░░░░░░░░╚══════════════╝",
 ]
 )
 
@@ -126,20 +76,32 @@ def timeit(func):
 
 class Direction(Enum):
     North = (-1, 0), "↑"
+    NorthX2 = (-2, 0), "↑↑"
 
     South = (1, 0), "↓"
+    SouthX2 = (2, 0), "↓↓"
 
     East = (0, 1), "→"
+    EastX2 = (0, 2), "→→"
 
     West = (0, -1), "←"
+    WestX2 = (0, -2), "←←"
 
-    # North_East = (-1, 1), "↗"
+    North_East = (-1, 1), "↗"
+    North_EastX2 = (-2, 2), "↗↗"
 
-    # North_West = (-1, -1), "↖"
+    North_West = (-2, -2), "↖"
+    North_WestX2 = (-2, -2), "↖↖"
 
-    # South_East = (1, 1), "↘"
+    South_East = (1, 1), "↘"
+    South_EastX2 = (2, 2), "↘↘"
 
-    # South_West = (1, -1), "↙"
+    South_West = (1, -1), "↙"
+    South_WestX2 = (2, -2), "↙↙"
+
+
+
+
 
     def __new__(cls, value: tuple[int, int], char):
         obj = object.__new__(cls)
@@ -167,6 +129,15 @@ class Direction(Enum):
         return self.value[1]
 
 
+class SizePresets(Enum):
+    Tiny = (16, 16)
+    Small = (32, 32)
+    Average = (48, 48)
+    Large = (64, 64)
+    Huge = (80, 80)
+    Extreme = (96, 96)
+
+
 class Tiles(Enum):  # I should remove these hard codings
     VOID = (0, "░")
 
@@ -186,13 +157,6 @@ class Tiles(Enum):  # I should remove these hard codings
     WALL_BL_CORNER = (11, "╚")
 
     FLOOR = (12, "▓")
-
-    HOARD = (13, "⚑")
-
-    ENTRANCE_VERTICAL = (14, "│")
-    ENTRANCE_HORIZONTAL = (15, "─")
-
-    BIG_BOSS_SPAWN = (16, "Ω")
 
     def __new__(cls, value, char):
         obj = object.__new__(cls)
@@ -351,24 +315,24 @@ class Node:
 
 
 class NodeGrid:
-    def __init__(self, size, ruleset: RuleSet = RuleSet(sample_string_c), seed=random.randint(0, 100)):
+    def __init__(self, size, ruleset: RuleSet = RuleSet(sample), seed=random.randint(0, 100)):
         self.width, self.height = size
         self.ruleset = ruleset
         self.grid = None
         random.seed(seed)
 
     @timeit
-    def start_generation(self, force_initial_states=True, max_iterations=100_000):
+    def start_generation(self, pregen=True, max_iterations=20):
         grid = None
         iteration = 0
         print("Starting Generation.")
         while grid is None and iteration < max_iterations:
-            grid = self.generate(force_initial_states)
             iteration += 1
             if VERBOSE:
                 print(f"Current Iteration: {iteration}")
             else:
                 print(f"\rCurrent Iteration: {iteration}", end="")
+            grid = self.generate(pregen)
         print()
         if grid is None:
             print(f"Failed to generate grid after {iteration} iterations")
@@ -376,13 +340,12 @@ class NodeGrid:
             print(f"Generation took {iteration} iterations")
             self.grid = grid
 
-    def generate(self, force_initial_states=True):
-        num_tiles = self.width * self.height
+    def generate(self, pregen=True):
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
 
         # this section forces some states to get more desirable results, works without it
         ################################################################################################################
-        if force_initial_states:
+        if pregen:
             for x in range(self.width):
                 grid[x][0].potential = {Tiles.VOID}
                 self.propagate_node(grid[x][0], grid)
@@ -393,14 +356,14 @@ class NodeGrid:
                 self.propagate_node(grid[0][y], grid)
                 grid[-1][y].potential = {Tiles.VOID}
                 self.propagate_node(grid[-1][y], grid)
-            node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            for _ in range(min(1, random.randint(num_tiles // 4, num_tiles // 3))):
-                while Tiles.FLOOR not in node.potential:
+            for _ in range(5 + ((self.width + self.height) //5)):
+                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
+                while Tiles.FLOOR not in node.potential or len(node.potential) < 2:
                     node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
                 node.potential = {Tiles.FLOOR}
                 self.propagate_node(node, grid)
                 for adj, _ in self.get_adjacents(node, grid):
-                    if Tiles.FLOOR in adj.potential and random.randint(0, 1):
+                    if Tiles.FLOOR in adj.potential and random.randint(0, 10):
                         adj.potential = {Tiles.FLOOR}
                         self.propagate_node(adj, grid)
 
@@ -411,7 +374,8 @@ class NodeGrid:
             if node.collapse():
                 self.propagate_node(node, grid)
             else:
-                # self.print_grid(grid)
+                print("Failed to collapse node, please try and create valid rule")
+                self.print_grid(grid)
                 # quit()
                 return None
         return grid
@@ -455,12 +419,20 @@ class NodeGrid:
                 elif len(grid[x][y].potential) > 1:
                     print(f"{colours['blue']}{grid[x][y].entropy():^2}{colours['end']}", end="")
                 else:
-                    print(f"{colours['red']}{'!':^2}{colours['end']}", end="")
+                    print(f"{colours['red']}{'█':^2}{colours['end']}", end="")
+            print()
+
+    @staticmethod
+    def pretty_print_grid(grid):
+        for x in range(len(grid)):
+            for y in range(len(grid[x])):
+                tile = next(iter(grid[x][y].potential))
+                print(f"{tile}", end="")
             print()
 
     def propagate_node(self, node, grid):
         queue = deque(((self.get_adjacents(node, grid), node.potential),))
-        seen = set()
+        seen = {node}
         while len(queue) > 0:
             adjacents, potentials = queue.pop()
             for adjacent, direction in adjacents:
@@ -479,8 +451,9 @@ class NodeGrid:
 
 
 def test():
-    for size in [(5, 5), (5, 10), (10, 10), (10, 15), (15, 15), (15, 20), (20, 20), (20, 25), (25, 25), (25, 30), (30, 30)]:
-        print("\n{} x {}".format(*size))
-        node_grid = NodeGrid(size)
-        node_grid.start_generation(True)
-        node_grid.print_grid(node_grid.grid)
+    for pregen in (True, False):
+        for size in SizePresets:
+            print("\n{} x {}".format(*size.value))
+            node_grid = NodeGrid(size.value)
+            node_grid.start_generation(pregen)
+            node_grid.pretty_print_grid(node_grid.grid)
