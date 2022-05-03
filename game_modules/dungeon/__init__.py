@@ -1,8 +1,11 @@
+import math
 import random
 from collections import Counter
 from collections import deque
 from enum import Enum
 from functools import wraps
+
+import numpy as np
 
 VERBOSE = False
 
@@ -22,16 +25,16 @@ sample = "\n".join([
     "░╠═╬═╣╠╬╣╠═╬═╣░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
     "░║░║░║╚╩╝║▓║▓║░░║▓▓╦▓╩▓╣▓╠▓╬▓▓▓║",
     "░╚═╩═╝░░░╚═╩═╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╔══╦══╗╔══╦══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░║╔═╩═╗║║╔═╬═╗║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░║║▓▓▓║║║║╔╩╗║║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░╔══╦══╗╔══╦══╗░║▓▓╔╗╔╗▓▓▓▓▓▓▓▓║",
+    "░║╔═╩═╗║║╔═╬═╗║░║▓▓╚╝╚╝▓▓▓▓▓▓▓▓║",
+    "░║║▓▓▓║║║║╔╩╗║║░║▓▓╔╗╔╗▓▓▓▓▓▓▓▓║",
+    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░║▓▓╚╝╚╝▓▓▓▓▓▓▓▓║",
     "░║║▓▓▓║║║║╚╦╝║║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░║╚═╦═╝║║╚═╬═╝║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╚══╩══╝╚══╩══╝░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░╔╗╔╗░░╔╗╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░╚╩╩╝░░╚╣╠╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░╔╦╦╗░░╔╣╠╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "░║╚═╦═╝║║╚═╬═╝║░║╔═╦═╗▓▓▓╔═╦═╗▓║",
+    "░╚══╩══╝╚══╩══╝░║║░║░║╔╦╗║▓║▓║▓║",
+    "░░░╔╗╔╗░░╔╗╔╗░░░║╠═╬═╣╠╬╣╠═╬═╣▓║",
+    "░░░╚╩╩╝░░╚╣╠╝░░░║║░║░║╚╩╝║▓║▓║▓║",
+    "░░░╔╦╦╗░░╔╣╠╗░░░║╚═╩═╝▓▓▓╚═╩═╝▓║",
     "░░░╚╝╚╝░░╚╝╚╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
     "░░░╔═╗░░░░╔╗╔╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
     "░░░╚╦╝░░░░║╠╣║░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
@@ -39,23 +42,23 @@ sample = "\n".join([
     "░░░╚═╝░░░░░░░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
     "░░╔╗░░░░░░░╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
     "░░╠╝░░░░░░░╚╣░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╔╣░░╔═══╗░░╠╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╚╝╔╗╚═══╝╔╗╚╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░╚╩╦╗░╔╦╩╝░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╔═══╗╚╝░╚╝╔═══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╚═══╝░░░░░╚═══╝░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░╔╦╦╗░░░╔╗╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░║╠╣║░░░╚╬╬╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░╚╩╩╝░░░╔╬╬╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░░░░╔╗░╚╝╚╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░░░╔╝╚╗░░░░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░░░╚╗╔╝░░░░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╔═╗░░╚╝░░╔═╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╔╝░╚╗░░░░╔╝▓╚╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "║░░░║░░░░║▓▓▓║░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╚╗░╔╝░░░░╚╗▓╔╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╚═╝░░░░░░╚═╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░░░░░░░░░░░░░░╚══════════════╝",
+    "░╔╣░░╔═══╗░░╠╗░░╚══════════════╝",
+    "░╚╝╔╗╚═══╝╔╗╚╝░░░░░░░░░░░░░░░░░░",
+    "░░░╚╩╦╗░╔╦╩╝░░░░░░░░░░░░░░░░░░░░",
+    "╔═══╗╚╝░╚╝╔═══╗░░░░░░░░░░░░░░░░░",
+    "╚═══╝░░░░░╚═══╝░░░░░░░░░░░░░░░░░",
+    "░░╔╦╦╗░░░╔╗╔╗░░░░░░░░░░░░░░░░░░░",
+    "░░║╠╣║░░░╚╬╬╝░░░░░░░░░░░░░░░░░░░",
+    "░░╚╩╩╝░░░╔╬╬╗░░░░░░░░░░░░░░░░░░░",
+    "░░░░░░╔╗░╚╝╚╝░░░░░░░░░░░░░░░░░░░",
+    "░░░░░╔╝╚╗░░░░░░░░░░░░░░░░░░░░░░░",
+    "░░░░░╚╗╔╝░░░░░░░░░░░░░░░░░░░░░░░",
+    "░╔═╗░░╚╝░░╔═╗░░░░░░░░░░░░░░░░░░░",
+    "╔╝░╚╗░░░░╔╝▓╚╗░░░░░░░░░░░░░░░░░░",
+    "║░░░║░░░░║▓▓▓║░░░░░░░░░░░░░░░░░░",
+    "╚╗░╔╝░░░░╚╗▓╔╝░░░░░░░░░░░░░░░░░░",
+    "░╚═╝░░░░░░╚═╝░░░░░░░░░░░░░░░░░░░",
+    "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
 ]
 )
 
@@ -76,28 +79,20 @@ def timeit(func):
 
 class Direction(Enum):
     North = (-1, 0), "↑"
-    NorthX2 = (-2, 0), "↑↑"
 
     South = (1, 0), "↓"
-    SouthX2 = (2, 0), "↓↓"
 
     East = (0, 1), "→"
-    EastX2 = (0, 2), "→→"
 
     West = (0, -1), "←"
-    WestX2 = (0, -2), "←←"
 
     North_East = (-1, 1), "↗"
-    North_EastX2 = (-2, 2), "↗↗"
 
     North_West = (-2, -2), "↖"
-    North_WestX2 = (-2, -2), "↖↖"
 
     South_East = (1, 1), "↘"
-    South_EastX2 = (2, 2), "↘↘"
 
     South_West = (1, -1), "↙"
-    South_WestX2 = (2, -2), "↙↙"
 
 
 
@@ -303,13 +298,10 @@ class Node:
 
     def collapse(self):
         # shrink set to size 1
+
         if len(self.potential) > 1:
-            # get a weighted list from poteintial
-            weighted_list = []
-            for tile in self.potential:
-                weighted_list.append((tile, self.ruleset.sample_str.count(tile.char)))
-            # self.potential = {random.choice(list(self.potential))}
-            self.potential = {random.choice(weighted_list)[0]}
+            weights = {tile: self.ruleset.weights[tile] for tile in self.potential}
+            self.potential = {random.choices(list(weights.keys()), list(weights.values()), k=1)[0]}
             return True
         return False
 
@@ -356,7 +348,7 @@ class NodeGrid:
                 self.propagate_node(grid[0][y], grid)
                 grid[-1][y].potential = {Tiles.VOID}
                 self.propagate_node(grid[-1][y], grid)
-            for _ in range(5 + ((self.width + self.height) //5)):
+            for _ in range(2 + ((self.width + self.height) // 8)):
                 node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
                 while Tiles.FLOOR not in node.potential or len(node.potential) < 2:
                     node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
@@ -374,7 +366,7 @@ class NodeGrid:
             if node.collapse():
                 self.propagate_node(node, grid)
             else:
-                print("Failed to collapse node, please try and create valid rule")
+                print("\nFailed to collapse node, please try and create valid rule")
                 self.print_grid(grid)
                 # quit()
                 return None
@@ -417,7 +409,7 @@ class NodeGrid:
                     tile = next(iter(grid[x][y].potential))
                     print(f"{colours['green']}{tile:^2}{colours['end']}", end="")
                 elif len(grid[x][y].potential) > 1:
-                    print(f"{colours['blue']}{grid[x][y].entropy():^2}{colours['end']}", end="")
+                    print(f"{colours['blue']}{int(grid[x][y].entropy()):^2}{colours['end']}", end="")
                 else:
                     print(f"{colours['red']}{'█':^2}{colours['end']}", end="")
             print()
@@ -451,9 +443,12 @@ class NodeGrid:
 
 
 def test():
-    for pregen in (True, False):
+    for pregen in (True, False,):
         for size in SizePresets:
             print("\n{} x {}".format(*size.value))
             node_grid = NodeGrid(size.value)
             node_grid.start_generation(pregen)
-            node_grid.pretty_print_grid(node_grid.grid)
+            if node_grid.grid is not None:
+                node_grid.pretty_print_grid(node_grid.grid)
+            else:
+               quit()
