@@ -6,6 +6,75 @@ from functools import wraps
 
 VERBOSE = False
 
+sample_string = "\n".join([
+    "║║║░░║╚╩╝║╚╝║║║",
+    "╩╝║╔═╩═╦═╩═╗║╚╩",
+    "══╝║╔╗▓║▓╔╗║╚══",
+    "╗╔═╝╚╬╗║╔╬╝╚═╗╔",
+    "╝║▓╔╗╠╝║╚╣╔╗▓║╚",
+    "═╣▓╚╩╝▓║▓╚╩╝▓╠═",
+    "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
+    "╣╠═════╬═════╣╠",
+    "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
+    "═╣▓╔╦╗▓║▓╔╦╗▓╠═",
+    "░║▓╚╝╠╗║╔╣╚╝▓║░",
+    "░╚═╗╔╬╝║╚╬╗╔═╝░",
+    "══╗║╚╝▓║▓╚╝║╔══",
+    "╦╗║╚═╦═╩═╦═╝║╔╦",
+    "║║║░░║╔╦╗║╔╗║║║",
+]
+)
+
+sample_string_b = "\n".join([
+    "╔╝║░░║╚╩╝║╚╝║╚╗",
+    "╝░║╔═╩═╦═╩═╗║░╚",
+    "══╝║▓▓▓║▓▓▓║╚══",
+    "╗╔═╝▓▓▓║▓▓▓╚═╗╔",
+    "╝║▓╔╗▓▓║▓▓╔╗▓║╚",
+    "═╣▓╚╝▓▓║▓▓╚╝▓╠═",
+    "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
+    "╣╠═════╬═════╣╠",
+    "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
+    "═╣▓╔╗▓▓║▓▓╔╗▓╠═",
+    "░║▓╚╝▓▓║▓▓╚╝▓║░",
+    "░╚═╗▓▓▓║▓▓▓╔═╝░",
+    "══╗║▓▓▓║▓▓▓║╔══",
+    "╗░║╚═╦═╩═╦═╝║░╔",
+    "╚╗║░░║╔╦╗║╔╗║╔╝",
+]
+)
+
+sample_string_c = "\n".join([
+    "░░░░░░░░░░░░░░░░",
+    "░╔╗╔╗░╔══╗░╔══╗░",
+    "░╚╝╚╝░║░░║░║▓▓║░",
+    "░╔╗╔╗░║░░║░║▓▓║░",
+    "░╚╝╚╝░╚══╝░╚══╝░",
+    "░░░░░░░░░░░░░░░░",
+    "░╔═╦═╗░░░╔═╦═╗░░",
+    "░║░║░║╔╦╗║▓║▓║░░",
+    "░╠═╬═╣╠╬╣╠═╬═╣░░",
+    "░║░║░║╚╩╝║▓║▓║░░",
+    "░╚═╩═╝░░░╚═╩═╝░░",
+    "░╔══╦══╗╔══╦══╗░",
+    "░║╔═╩═╗║║╔═╬═╗║░",
+    "░║║▓▓▓║║║║╔╩╗║║░",
+    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░",
+    "░║║▓▓▓║║║║╚╦╝║║░",
+    "░║╚═╦═╝║║╚═╬═╝║░",
+    "░╚══╩══╝╚══╩══╝░",
+    "░░░╔╗╔╗░░╔╗╔╗░░░",
+    "░░░╚╩╩╝░░╚╣╠╝░░░",
+    "░░░╔╦╦╗░░╔╣╠╗░░░",
+    "░░░╚╝╚╝░░╚╝╚╝░░░",
+    "░░░░░░░░░░░░░░░░",
+
+
+]
+)
+
+
+
 
 # decorator to time functions
 def timeit(func):
@@ -237,17 +306,22 @@ class Node:
     def collapse(self):
         # shrink set to size 1
         if len(self.potential) > 1:
-            self.potential = {random.choice(list(self.potential))}
+            # get a weighted list from poteintial
+            weighted_list = []
+            for tile in self.potential:
+                weighted_list.append((tile, self.ruleset.sample_str.count(tile.char)))
+            #self.potential = {random.choice(list(self.potential))}
+            self.potential = {random.choice(weighted_list)[0]}
             return True
         return False
 
 
 class NodeGrid:
-    def __init__(self, size, ruleset: RuleSet, seed=None):
+    def __init__(self, size, ruleset: RuleSet = RuleSet(sample_string_b), seed=None):
         self.width, self.height = size
         self.ruleset = ruleset
         self.grid = None
-        random.seed(seed if seed is not None else 0)
+        random.seed(seed if seed is not None else int(random.random()))
 
     @timeit
     def start_generation(self, force_initial_states=True, max_iterations=100_000):
@@ -269,6 +343,7 @@ class NodeGrid:
             self.grid = grid
 
     def generate(self, force_initial_states=True):
+        num_tiles = self.width * self.height
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
 
         # this section forces some states to get more desirable results, works without it
@@ -285,10 +360,17 @@ class NodeGrid:
                 grid[-1][y].potential = {Tiles.VOID}
                 self.propagate_node(grid[-1][y], grid)
             node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            while Tiles.FLOOR not in node.potential:
-                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            node.potential = {Tiles.FLOOR}
-            self.propagate_node(node, grid)
+            for _ in range(min(1, random.randint(num_tiles//5, num_tiles//3))):
+                while Tiles.FLOOR not in node.potential:
+                    node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
+                node.potential = {Tiles.FLOOR}
+                self.propagate_node(node, grid)
+                for adj, _ in self.get_adjacents(node, grid):
+                    if Tiles.FLOOR in adj.potential and random.randint(0, 1):
+                        adj.potential = {Tiles.FLOOR}
+                        self.propagate_node(adj, grid)
+
+
         ################################################################################################################
         while (node := self.get_lowest_entropy(grid)) is not None:
             if VERBOSE:
@@ -296,6 +378,8 @@ class NodeGrid:
             if node.collapse():
                 self.propagate_node(node, grid)
             else:
+                #self.print_grid(grid)
+                #quit()
                 return None
         return grid
 
@@ -329,12 +413,8 @@ class NodeGrid:
             "blue": '\033[94m',
             "end": '\033[0m'
         }
-        print("\n  ", end="")
-        for y in range(len(grid[0])):
-            print(f"{y:>2}", end="")
         print()
         for x in range(len(grid)):
-            print(f"{x:>2}", end=" ")
             for y in range(len(grid[x])):
                 if grid[x][y].is_collapsed():
                     tile = next(iter(grid[x][y].potential))
@@ -359,7 +439,6 @@ class NodeGrid:
                         queue.appendleft((self.get_adjacents(adjacent, grid), adjacent.potential))
 
     def get_adjacents(self, node, grid):
-        # get all the nodes around the input node
         for direction in [Direction.North, Direction.East, Direction.South, Direction.West]:
             adj_x, adj_y = node.x + direction.x, node.y + direction.y
             if not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height):
@@ -367,46 +446,8 @@ class NodeGrid:
 
 
 def test():
-    sample_string = "\n".join([
-        "║║║░░║╚╩╝║╚╝║║║",
-        "╩╝║╔═╩═╦═╩═╗║╚╩",
-        "══╝║╔╗▓║▓╔╗║╚══",
-        "╗╔═╝╚╬╗║╔╬╝╚═╗╔",
-        "╝║▓╔╗╠╝║╚╣╔╗▓║╚",
-        "═╣▓╚╩╝▓║▓╚╩╝▓╠═",
-        "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
-        "╣╠═════╬═════╣╠",
-        "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
-        "═╣▓╔╦╗▓║▓╔╦╗▓╠═",
-        "░║▓╚╝╠╗║╔╣╚╝▓║░",
-        "░╚═╗╔╬╝║╚╬╗╔═╝░",
-        "══╗║╚╝▓║▓╚╝║╔══",
-        "╦╗║╚═╦═╩═╦═╝║╔╦",
-        "║║║░░║╔╦╗║╔╗║║║",
-    ]
-    )
-
-    sample_string_b = "\n".join([
-        "╔╝║░░║╚╩╝║╚╝║╚╗",
-        "╝░║╔═╩═╦═╩═╗║░╚",
-        "══╝║▓▓▓║▓▓▓║╚══",
-        "╗╔═╝▓▓▓║▓▓▓╚═╗╔",
-        "╝║▓╔╗▓▓║▓▓╔╗▓║╚",
-        "═╣▓╚╝▓▓║▓▓╚╝▓╠═",
-        "╗║▓▓▓▓▓║▓▓▓▓▓║╔",
-        "╣╠═════╬═════╣╠",
-        "╝║▓▓▓▓▓║▓▓▓▓▓║╚",
-        "═╣▓╔╗▓▓║▓▓╔╗▓╠═",
-        "░║▓╚╝▓▓║▓▓╚╝▓║░",
-        "░╚═╗▓▓▓║▓▓▓╔═╝░",
-        "══╗║▓▓▓║▓▓▓║╔══",
-        "╗░║╚═╦═╩═╦═╝║░╔",
-        "╚╗║░░║╔╦╗║╔╗║╔╝",
-    ]
-    )
-
-    sample = RuleSet(sample_string)
-    node_grid = NodeGrid((10, 10), sample, seed=random.randint(0, 10000))
-    sample.print_rules()
-    node_grid.start_generation(True)
-    node_grid.print_grid(node_grid.grid)
+    for size in [(5, 5), (5, 10), (10, 10), (10, 15), (15, 15), (15, 20), (20, 20)]:
+        print("\n{} x {}".format(*size))
+        node_grid = NodeGrid(size)
+        node_grid.start_generation(True)
+        node_grid.print_grid(node_grid.grid)
