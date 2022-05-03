@@ -67,13 +67,47 @@ sample_string_c = "\n".join([
     "░░░╚╩╩╝░░╚╣╠╝░░░",
     "░░░╔╦╦╗░░╔╣╠╗░░░",
     "░░░╚╝╚╝░░╚╝╚╝░░░",
+    "░░░╔═╗░░░░╔╗╔╗░░",
+    "░░░╚╦╝░░░░║╠╣║░░",
+    "░░░╔╩╗░░░░╚╝╚╝░░",
+    "░░░╚═╝░░░░░░░░░░",
+    "░░╔╗░░░░░░░╔╗░░░",
+    "░░╠╝░░░░░░░╚╣░░░",
+    "░╔╣░░╔═══╗░░╠╗░░",
+    "░╚╝╔╗╚═══╝╔╗╚╝░░",
+    "░░░╚╩╦╗░╔╦╩╝░░░░",
+    "╔═══╗╚╝░╚╝╔═══╗░",
+    "╚═══╝░░░░░╚═══╝░",
+    "░░╔╦╦╗░░░╔╗╔╗░░░",
+    "░░║╠╣║░░░╚╬╬╝░░░",
+    "░░╚╩╩╝░░░╔╬╬╗░░░",
+    "░░░░░░╔╗░╚╝╚╝░░░",
+    "░░░░░╔╝╚╗░░░░░░░",
+    "░░░░░╚╗╔╝░░░░░░░",
+    "░╔═╗░░╚╝░░╔═╗░░░",
+    "╔╝░╚╗░░░░╔╝▓╚╗░░",
+    "║░░░║░░░░║▓▓▓║░░",
+    "╚╗░╔╝░░░░╚╗▓╔╝░░",
+    "░╚═╝░░░░░░╚═╝░░░",
     "░░░░░░░░░░░░░░░░",
-
-
+    "╔══════════════╗",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓╔╗╔╗▓▓▓▓╔╗╔╗▓║",
+    "║▓╚╬╬╝▓▓▓▓╚╩╩╝▓║",
+    "║▓╔╬╬╗▓▓▓▓╔╦╦╗▓║",
+    "║▓╚╝╚╝▓▓▓▓╚╝╚╝▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
+    "╚══════════════╝",
 ]
 )
-
-
 
 
 # decorator to time functions
@@ -310,18 +344,18 @@ class Node:
             weighted_list = []
             for tile in self.potential:
                 weighted_list.append((tile, self.ruleset.sample_str.count(tile.char)))
-            #self.potential = {random.choice(list(self.potential))}
+            # self.potential = {random.choice(list(self.potential))}
             self.potential = {random.choice(weighted_list)[0]}
             return True
         return False
 
 
 class NodeGrid:
-    def __init__(self, size, ruleset: RuleSet = RuleSet(sample_string_b), seed=None):
+    def __init__(self, size, ruleset: RuleSet = RuleSet(sample_string_c), seed=random.randint(0, 100)):
         self.width, self.height = size
         self.ruleset = ruleset
         self.grid = None
-        random.seed(seed if seed is not None else int(random.random()))
+        random.seed(seed)
 
     @timeit
     def start_generation(self, force_initial_states=True, max_iterations=100_000):
@@ -360,7 +394,7 @@ class NodeGrid:
                 grid[-1][y].potential = {Tiles.VOID}
                 self.propagate_node(grid[-1][y], grid)
             node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            for _ in range(min(1, random.randint(num_tiles//5, num_tiles//3))):
+            for _ in range(min(1, random.randint(num_tiles // 4, num_tiles // 3))):
                 while Tiles.FLOOR not in node.potential:
                     node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
                 node.potential = {Tiles.FLOOR}
@@ -370,7 +404,6 @@ class NodeGrid:
                         adj.potential = {Tiles.FLOOR}
                         self.propagate_node(adj, grid)
 
-
         ################################################################################################################
         while (node := self.get_lowest_entropy(grid)) is not None:
             if VERBOSE:
@@ -378,8 +411,8 @@ class NodeGrid:
             if node.collapse():
                 self.propagate_node(node, grid)
             else:
-                #self.print_grid(grid)
-                #quit()
+                # self.print_grid(grid)
+                # quit()
                 return None
         return grid
 
@@ -446,7 +479,7 @@ class NodeGrid:
 
 
 def test():
-    for size in [(5, 5), (5, 10), (10, 10), (10, 15), (15, 15), (15, 20), (20, 20)]:
+    for size in [(5, 5), (5, 10), (10, 10), (10, 15), (15, 15), (15, 20), (20, 20), (20, 25), (25, 25), (25, 30), (30, 30)]:
         print("\n{} x {}".format(*size))
         node_grid = NodeGrid(size)
         node_grid.start_generation(True)
