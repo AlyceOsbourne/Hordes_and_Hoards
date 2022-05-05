@@ -1,10 +1,8 @@
-import game_modules.dungeon.wfc as wfc
+import game_modules.dungeon.tileset
+from game_modules.dungeon.wfc import NodeGrid
 
-w = wfc.NodeGrid((50,25))
 
 def test():
-    w.start_generation()
-    n = w.collapse_to_char_grid(w.grid)
-    # pretty print n
-    for row in n:
-        print("".join(row))
+    grid = NodeGrid.generate_grid(16,16)
+    grid = tileset.Tiles.convert_to_tiles(grid)
+    print("\n".join(["".join(row) for row in grid]), sep='\n')

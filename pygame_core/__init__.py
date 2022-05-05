@@ -335,6 +335,7 @@ class Game:
             if hasattr(game_module, "test"):
                 print(f"Testing {game_module.__name__}")
                 game_module.test()
+        self.game_event_handler.handle(pygame.event.Event(pygame.QUIT))
 
 
 game = Game()

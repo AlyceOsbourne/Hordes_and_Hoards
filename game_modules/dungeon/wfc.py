@@ -56,8 +56,7 @@ sample = "\n".join([
     "╚╗░╔╝░░░░╚╗▓╔╝░░░░║░∩░║░║∩║░░░░░",
     "░╚═╝░░░░░░╚═╝░░░░░║░║░║░║║║░░░░░",
     "░░░░░░░░░░░░░░░░░░╚═╩═╝░╚╩╝░░░░░",
-]
-)
+])
 
 
 # decorator to time functions
@@ -456,18 +455,21 @@ class NodeGrid:
             if not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height):
                 yield grid[adj_x][adj_y], direction
 
-    def collapse_to_char_grid(self, grid):
+    def collapse_to_char_grid(self):
         collapsed_grid = [[None for _ in range(self.width)] for _ in range(self.height)]
-        for x in range(len(grid)):
-            for y in range(len(grid[x])):
-                node = grid[x][y]
+        for x in range(len(self.grid)):
+            for y in range(len(self.grid[x])):
+                node = self.grid[x][y]
                 if node.is_collapsed():
                     collapsed_grid[x][y] = next(iter(node.potential)).char
         return collapsed_grid
 
+    @classmethod
+    def generate_grid(cls, width, height, seed=None):
+        g = cls((width, height))
+        if seed is not None:
+            random.seed(seed)
+        g.start_generation()
+        return g.collapse_to_char_grid()
 
-if __name__ == "__main__":
-    print(__doc__)
-    ng = NodeGrid((32,32))
-    ng.start_generation()
-    ng.pretty_print_grid(ng.grid)
+
