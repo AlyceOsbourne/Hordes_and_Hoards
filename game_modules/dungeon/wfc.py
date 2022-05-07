@@ -5,9 +5,8 @@ Note, there are still artifacts at this time, I will refine the ruleset over tim
 from __future__ import annotations
 import random
 from collections import Counter, deque
-from enum import Enum
-from functools import wraps
-
+from game_modules.dungeon.tiledata import Tiles, Direction
+from test_functions import timeit
 VERBOSE = False
 
 sample = "\n".join([
@@ -59,157 +58,10 @@ sample = "\n".join([
 ])
 
 
-# decorator to time functions
-def timeit(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        import time
-        start = time.time()
-        result = func(*args, **kwargs)
-        end = time.time()
-        print(f"{func.__name__} took {end - start:2f} seconds")
-        return result
-
-    return wrapper
-
-
-class Direction(Enum):
-    North = (-1, 0), "↑"
-
-    South = (1, 0), "↓"
-
-    East = (0, 1), "→"
-
-    West = (0, -1), "←"
-
-    North_East = (-1, 1), "↗"
-
-    North_West = (-2, -2), "↖"
-
-    South_East = (1, 1), "↘"
-
-    South_West = (1, -1), "↙"
-
-    def __new__(cls, value: tuple[int, int], char):
-        obj = object.__new__(cls)
-        obj._value_ = value
-        obj.char = char
-        return obj
-
-    @property
-    def opposite(self):
-        return Direction.get_from_value((-self.value[0], -self.value[1]))
-
-    @classmethod
-    def get_from_value(cls, param):
-        for direction in cls:
-            if direction.value == param:
-                return direction
-        return None
-
-    @property
-    def x(self):
-        return self.value[0]
-
-    @property
-    def y(self):
-        return self.value[1]
-
-
-class SizePresets(Enum):
-    Tiny = (16, 16)
-    Small = (32, 32)
-    Average = (48, 48)
-    Large = (64, 64)
-    Huge = (80, 80)
-    Extreme = (96, 96)
-
-
-class Tiles(Enum):  # I should remove these hard codings
-    VOID = 0, "░"
-
-    WALL_HORIZONTAL = 1, "═"
-    WALL_VERTICAL = 2, "║"
-
-    WALL_T_UP = 3, "╩"
-    WALL_T_DOWN = 4, "╦"
-    WALL_T_LEFT = 5, "╠"
-    WALL_T_RIGHT = 6, "╣"
-
-    WALL_X = 7, "╬"
-
-    WALL_TR_CORNER = 8, "╗"
-    WALL_TL_CORNER = 9, "╔"
-    WALL_BR_CORNER = 10, "╝"
-    WALL_BL_CORNER = 11, "╚"
-
-    FLOOR = 12, "▓"
-
-    ENTRANCE = 13, "∩"
-
-    BOSS = 14, "◙"
-
-    HOARD = 15, "⌂"
-
-    def __new__(cls, value, char):
-        obj = object.__new__(cls)
-        obj._value_ = value
-        obj.char = char
-        return obj
-
-    @classmethod
-    def from_char(cls, char):
-        for t in cls:
-            if t.char == char:
-                return t
-        raise ValueError(f"No tile found for char {char}")
-
-    @classmethod
-    def from_name(cls, name):
-        for t in cls:
-            if t.name == name:
-                return t
-
-    def __hash__(self):
-        return self.value
-
-    def __str__(self):
-        return self.char
-
-
-EXCLUDED_FROM_GENERATION = [
-    Tiles.ENTRANCE,
-    Tiles.BOSS,
-    Tiles.HOARD,
-]
-
-
-def parse(string):
-    tile_set = []
-    if VERBOSE:
-        print(f"Parsing \n{string}")
-    for line in string.split("\n"):
-        if VERBOSE:
-            print(f"Parsing line {line}")
-        tile_set.append([])
-        for char in line:
-            if char == " ":
-                continue
-            if VERBOSE:
-                print(f"Parsing char {char}")
-            tile = Tiles.from_char(char)
-            if VERBOSE:
-                print(f"Got tile {tile}")
-            if tile is None:
-                raise Exception(f"Invalid tile: {char}")
-            tile_set[-1].append(tile)
-    return tile_set
-
-
 class RuleSet:
     def __init__(self, sample_str, wrap=False, directions=None):
         self.sample_str = sample_str
-        self.tiles = parse(self.sample_str)
+        self.tiles = Tiles.parse(self.sample_str)
         # get the weights of each tile tile_type
         self.weights = Counter([t for row in self.tiles for t in row])
         self.rules = self.calculate_adjacency_rules(self.tiles, wrap, directions)
@@ -287,7 +139,7 @@ class Node:
     def __init__(self, pos, ruleset: RuleSet):
         self.x, self.y = pos
         self.ruleset = ruleset
-        self.potential = set([tile for tile in ruleset.rules.keys() if tile not in EXCLUDED_FROM_GENERATION])
+        self.potential = set([tile for tile in ruleset.rules.keys() if tile not in Tiles.excluded_from_generation()])
 
     def constrain_potential(self, tile, direction):
         if direction in self.ruleset.rules[tile]:
@@ -337,8 +189,6 @@ class NodeGrid:
 
     def generate(self, pregen=True):
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
-
-        # this section forces some states to get more desirable results, this helps make it a dungeon
         ################################################################################################################
         if pregen:
             for x in range(self.width):
@@ -465,11 +315,10 @@ class NodeGrid:
         return collapsed_grid
 
     @classmethod
-    def generate_grid(cls, width, height, seed=None):
-        g = cls((width, height))
-        if seed is not None:
-            random.seed(seed)
-        g.start_generation()
-        return g.collapse_to_char_grid()
+    def generate_grid(cls, param, param1):
+        wfc = cls((param, param1))
+        wfc.start_generation()
+        return Tiles.convert_to_tiles(wfc.collapse_to_char_grid())
+
 
 

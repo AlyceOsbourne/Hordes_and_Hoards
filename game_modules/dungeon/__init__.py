@@ -1,8 +1,10 @@
-import game_modules.dungeon.tileset
-from game_modules.dungeon.wfc import NodeGrid
+import game_modules.dungeon.wfc as wfc
+import game_modules.dungeon.tiledata as td
 
-
+VERBOSE = False
 def test():
-    grid = NodeGrid.generate_grid(16,16)
-    grid = tileset.Tiles.convert_to_tiles(grid)
-    print("\n".join(["".join(row) for row in grid]), sep='\n')
+    wfc.VERBOSE = VERBOSE
+    td.VERBOSE = VERBOSE
+    grid = wfc.NodeGrid.generate_grid(16, 16)
+    print("\n".join(["".join(["{:1}".format(x) for x in row]) for row in grid]))
+

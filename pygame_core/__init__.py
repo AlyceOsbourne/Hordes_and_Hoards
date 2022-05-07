@@ -326,15 +326,28 @@ class Game:
                         f.write(f"```{func.__doc__}\n```\n")
             print(f"Finished creating docs for {game_module.__name__}")
 
-    def test(self):
+    def test(self, verbose=False):
         if not self.modules_loaded:
             self.load_game_modules()
         print(f"Starting tests for {self.title}")
         print(f"{self.title} has {len(self.game_modules)} modules")
         for game_module in self.game_modules:
-            if hasattr(game_module, "test"):
+            try:
                 print(f"Testing {game_module.__name__}")
-                game_module.test()
+                if hasattr(game_module, "test"):
+                    print(f"{game_module.__name__} has a test function, running...")
+                    if verbose and hasattr(game_module, "VERBOSE"):
+                        print(f"Making {game_module.__name__} verbose")
+                        game_module.VERBOSE = verbose
+                    game_module.test()
+                else:
+                    print(f"{game_module.__name__} has no test function, moving on.")
+            except Exception as e:
+                print(f"Failed to test {game_module.__name__}")
+                print(e)
+            finally:
+                print(f"Finished testing {game_module.__name__}")
+        print(f"Finished tests for {self.title}")
         self.game_event_handler.handle(pygame.event.Event(pygame.QUIT))
 
 
