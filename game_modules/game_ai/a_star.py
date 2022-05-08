@@ -1,14 +1,19 @@
 from functools import cache
 from math import sqrt
 from queue import PriorityQueue
-from test_functions import timeit
+
+import numpy as np
+
+from test_functions import time_it, time_it_min
 
 VERBOSE = False
 
-@timeit
-def a_star(start: tuple[int, int], goal: tuple[int, int], map: list[list[bool]]):
-    open = PriorityQueue()
-    open.put((0, start))
+
+@time_it_min(0.003)
+def a_star(start: tuple[int, int], goal: tuple[int, int], input_map: list[list[bool]]):
+    input_map = np.array(input_map, dtype=bool)
+    open_list = PriorityQueue()
+    open_list.put((0, start))
     closed = set()
     came_from = {}
     g_score = {start: 0}
@@ -16,8 +21,8 @@ def a_star(start: tuple[int, int], goal: tuple[int, int], map: list[list[bool]])
     path = []
     if VERBOSE:
         print("Starting A* search...")
-    while not open.empty():
-        current = open.get()[1]
+    while not open_list.empty():
+        current = open_list.get()[1]
         if VERBOSE:
             print("Current node:", current)
         if current == goal:
@@ -32,7 +37,7 @@ def a_star(start: tuple[int, int], goal: tuple[int, int], map: list[list[bool]])
                 print("Path:", path)
             return path
         closed.add(current)
-        for neighbor in neighbors(current, map):
+        for neighbor in neighbors(current, input_map):
             if VERBOSE:
                 print("Neighbor:", neighbor)
             if neighbor in closed:
@@ -46,11 +51,14 @@ def a_star(start: tuple[int, int], goal: tuple[int, int], map: list[list[bool]])
                 came_from[neighbor] = current
                 g_score[neighbor] = g_score_step
                 f_score[neighbor] = g_cost(neighbor, goal)
-                open.put((f_score[neighbor], neighbor))
+                open_list.put((f_score[neighbor], neighbor))
     return None
 
-def distance(a: tuple[int, int], b: tuple[int, int]):
-    return sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+@cache
+def distance(a: tuple[int, int], b: tuple[int, int], euclidian=False):
+    if euclidian:
+        return np.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+    return np.abs(a[0] - b[0]) + np.abs(a[1] - b[1])
 
 
 def g_cost(node, start):
@@ -64,12 +72,13 @@ def h_cost(node, end):
 def f_cost(start, node, end):
     return g_cost(node, start) + h_cost(node, end)
 
-def passable(node, map):
-    return map[node[0]][node[1]] == True
+
+def passable(node, input_map):
+    return input_map[node[0]][node[1]] is True
 
 
-def neighbors(node, map):
+def neighbors(node, input_map):
     for direction in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
         adj_x, adj_y = node[0] + direction[0], node[1] + direction[1]
-        if 0 <= adj_x < len(map) and 0 <= adj_y < len(map[0]) and passable((adj_x, adj_y), map):
-            yield (adj_x, adj_y)
+        if 0 <= adj_x < len(input_map) and 0 <= adj_y < len(input_map[0]) and passable((adj_x, adj_y), input_map):
+            yield adj_x, adj_y

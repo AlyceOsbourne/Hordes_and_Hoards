@@ -5,8 +5,10 @@ Note, there are still artifacts at this time, I will refine the ruleset over tim
 from __future__ import annotations
 import random
 from collections import Counter, deque
+from functools import cache
+
 from game_modules.dungeon.tiledata import Tiles, Direction
-from test_functions import timeit
+from test_functions import time_it
 VERBOSE = False
 
 sample = "\n".join([
@@ -168,23 +170,25 @@ class NodeGrid:
         self.grid = None
         random.seed(seed)
 
-    @timeit
+    @time_it
     def start_generation(self, pregen=True, max_iterations=50):
         grid = None
         iteration = 0
-        print("Starting Generation.")
+        if VERBOSE:
+            print("Starting Generation.")
         while grid is None and iteration < max_iterations:
             iteration += 1
             if VERBOSE:
                 print(f"Current Iteration: {iteration}")
-            else:
-                print(f"\rCurrent Iteration: {iteration}", end="")
             grid = self.generate(pregen)
-        print()
+        if VERBOSE:
+            print()
         if grid is None:
-            print(f"Failed to generate grid after {iteration} iterations")
+            if VERBOSE:
+                print(f"Failed to generate grid after {iteration} iterations")
         else:
-            print(f"Generation took {iteration} iterations")
+            if VERBOSE:
+                print(f"Generation took {iteration} iterations")
             self.grid = grid
 
     def generate(self, pregen=True):

@@ -326,7 +326,7 @@ class Game:
                         f.write(f"```{func.__doc__}\n```\n")
             print(f"Finished creating docs for {game_module.__name__}")
 
-    def test(self, verbose=False):
+    def test(self, verbose=False, raise_exceptions=False):
         if not self.modules_loaded:
             self.load_game_modules()
         print(f"Starting tests for {self.title}")
@@ -344,7 +344,10 @@ class Game:
                     print(f"{game_module.__name__} has no test function, moving on.")
             except Exception as e:
                 print(f"Failed to test {game_module.__name__}")
-                print(e)
+                if raise_exceptions:
+                    raise e
+                else:
+                    print(f"{e}")
             finally:
                 print(f"Finished testing {game_module.__name__}")
         print(f"Finished tests for {self.title}")
