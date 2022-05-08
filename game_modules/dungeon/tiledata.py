@@ -1,7 +1,5 @@
 from enum import Enum
 
-import numpy
-
 VERBOSE = False
 
 
@@ -370,7 +368,7 @@ class Tiles(Enum):  # I should remove these hard codings
                 return tile.tile
 
     @staticmethod
-    def convert_to_tiles(char_grid: list[list[str]]):
+    def convert_to_tiles(char_grid):
         grid = []
         for column in char_grid:
             col = []
@@ -399,9 +397,8 @@ class Tiles(Enum):  # I should remove these hard codings
         return self.char in self.walkable
 
     @staticmethod
-    def get_walkable_tiles(grid:list[list[str]]):
+    def get_walkable_tiles(grid: list[list[str]]):
         return [[tile in Tiles.walkable() for tile in row] for row in grid]
-
 
     @staticmethod
     def pretty_print_tiles(tile_grid):
@@ -476,4 +473,3 @@ class Direction(Enum):
     @property
     def y(self):
         return self.value[1]
-

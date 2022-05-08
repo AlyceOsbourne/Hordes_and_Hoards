@@ -12,7 +12,7 @@ def test():
 
     grid = NodeGrid.generate_grid(16, 16)
     walkable = tiledata.Tiles.get_walkable_tiles(grid)
-    for _ in range(10):
+    for _ in range(10000):
         start = None
         while start is None or not walkable[start[0]][start[1]]:
             start = (random.randint(0, len(walkable) - 1), random.randint(0, len(walkable[0])) - 1)

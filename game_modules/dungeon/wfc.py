@@ -3,12 +3,13 @@ Dungeon generator for my game, using the WFC algorithm.
 Note, there are still artifacts at this time, I will refine the ruleset over time.
 """
 from __future__ import annotations
+
 import random
 from collections import Counter, deque
-from functools import cache
 
 from game_modules.dungeon.tiledata import Tiles, Direction
 from test_functions import time_it
+
 VERBOSE = False
 
 sample = "\n".join([
@@ -155,7 +156,6 @@ class Node:
 
     def collapse(self):
         # shrink set to size 1
-
         if len(self.potential) > 1:
             weights = {tile: self.ruleset.weights[tile] for tile in self.potential}
             self.potential = {random.choices(list(weights.keys()), list(weights.values()), k=1)[0]}
@@ -323,6 +323,3 @@ class NodeGrid:
         wfc = cls((param, param1))
         wfc.start_generation()
         return Tiles.convert_to_tiles(wfc.collapse_to_char_grid())
-
-
-

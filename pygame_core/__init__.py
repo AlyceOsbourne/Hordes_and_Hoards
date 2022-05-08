@@ -253,7 +253,8 @@ class Game:
                 self.clock.tick(self.fps)
             except Exception as e:
                 print("(╯°□°）╯︵ ┻━┻")
-                print("Something Broke....", e, sep="\n")
+                print("Something Broke....", sep="\n")
+                raise e
 
     def update(self):
         for game_module in self.game_modules:
