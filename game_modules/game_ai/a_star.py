@@ -1,10 +1,9 @@
 from functools import cache
-from math import sqrt
 from queue import PriorityQueue
 
 import numpy as np
 
-from test_functions import time_it, time_it_min
+from test_functions import time_it_min
 
 VERBOSE = False
 

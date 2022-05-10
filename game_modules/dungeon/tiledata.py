@@ -1,6 +1,10 @@
 from enum import Enum
+from pygame_core import get_game
 
 VERBOSE = False
+
+game = get_game()
+eh, am, sm = game.handles
 
 
 class Tiles(Enum):  # I should remove these hard codings
@@ -70,8 +74,8 @@ class Tiles(Enum):  # I should remove these hard codings
     WALL_T_UP = 3, "╩", "\n".join(
         [
             "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "███▓▓▓▓▓▓▓▓▓▓███",
+            "░██▓▓▓▓▓▓▓▓▓▓██░",
+            "██▓▓▓▓▓▓▓▓▓▓▓▓██",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
@@ -103,16 +107,16 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "███▓▓▓▓▓▓▓▓▓▓███",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
+            "██▓▓▓▓▓▓▓▓▓▓▓▓██",
+            "░██▓▓▓▓▓▓▓▓▓▓██░",
             "░░█▓▓▓▓▓▓▓▓▓▓█░░"
         ]
     )
     WALL_T_LEFT = 5, "╠", "\n".join(
         [
             "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓███",
+            "░░█▓▓▓▓▓▓▓▓▓▓██░",
+            "░░█▓▓▓▓▓▓▓▓▓▓▓██",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
@@ -123,16 +127,16 @@ class Tiles(Enum):  # I should remove these hard codings
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "░░█▓▓▓▓▓▓▓▓▓▓███",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
+            "░░█▓▓▓▓▓▓▓▓▓▓▓██",
+            "░░█▓▓▓▓▓▓▓▓▓▓██░",
             "░░█▓▓▓▓▓▓▓▓▓▓█░░"
         ]
     )
     WALL_T_RIGHT = 6, "╣", "\n".join(
         [
             "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "███▓▓▓▓▓▓▓▓▓▓█░░",
+            "░██▓▓▓▓▓▓▓▓▓▓█░░",
+            "██▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
@@ -143,8 +147,8 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
-            "███▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
+            "██▓▓▓▓▓▓▓▓▓▓▓█░░",
+            "░██▓▓▓▓▓▓▓▓▓▓█░░",
             "░░█▓▓▓▓▓▓▓▓▓▓█░░"
         ]
     )
@@ -152,8 +156,8 @@ class Tiles(Enum):  # I should remove these hard codings
     WALL_X = 7, "╬", "\n".join(
         [
             "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "███▓▓▓▓▓▓▓▓▓▓███",
+            "░██▓▓▓▓▓▓▓▓▓▓██░",
+            "██▓▓▓▓▓▓▓▓▓▓▓▓██",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
@@ -164,8 +168,8 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "███▓▓▓▓▓▓▓▓▓▓███",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
+            "██▓▓▓▓▓▓▓▓▓▓▓▓██",
+            "░██▓▓▓▓▓▓▓▓▓▓██░",
             "░░█▓▓▓▓▓▓▓▓▓▓█░░"
         ]
     )
@@ -174,7 +178,8 @@ class Tiles(Enum):  # I should remove these hard codings
         [
             "░░░░░░░░░░░░░░░░",
             "░░░░░░░░░░░░░░░░",
-            "██████████████░░",
+            "█████████████░░░",
+            "▓▓▓▓▓▓▓▓▓▓▓▓██░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
@@ -184,9 +189,8 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
-            "███▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
+            "██▓▓▓▓▓▓▓▓▓▓▓█░░",
+            "░██▓▓▓▓▓▓▓▓▓▓█░░",
             "░░█▓▓▓▓▓▓▓▓▓▓█░░"
         ]
     )
@@ -194,7 +198,8 @@ class Tiles(Enum):  # I should remove these hard codings
         [
             "░░░░░░░░░░░░░░░░",
             "░░░░░░░░░░░░░░░░",
-            "░░██████████████",
+            "░░░█████████████",
+            "░░██▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
@@ -204,17 +209,16 @@ class Tiles(Enum):  # I should remove these hard codings
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "░░█▓▓▓▓▓▓▓▓▓▓███",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
+            "░░█▓▓▓▓▓▓▓▓▓▓▓██",
+            "░░█▓▓▓▓▓▓▓▓▓▓██░",
             "░░█▓▓▓▓▓▓▓▓▓▓█░░"
         ]
     )
     WALL_BR_CORNER = 10, "╝", "\n".join(
         [
             "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "███▓▓▓▓▓▓▓▓▓▓█░░",
+            "░██▓▓▓▓▓▓▓▓▓▓█░░",
+            "██▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
@@ -224,8 +228,8 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓█░░",
-            "██████████████░░",
+            "▓▓▓▓▓▓▓▓▓▓▓▓██░░",
+            "█████████████░░░",
             "░░░░░░░░░░░░░░░░",
             "░░░░░░░░░░░░░░░░"
         ]
@@ -233,8 +237,8 @@ class Tiles(Enum):  # I should remove these hard codings
     WALL_BL_CORNER = 11, "╚", "\n".join(
         [
             "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓█░░",
-            "░░█▓▓▓▓▓▓▓▓▓▓███",
+            "░░█▓▓▓▓▓▓▓▓▓▓██░",
+            "░░█▓▓▓▓▓▓▓▓▓▓▓██",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
@@ -244,8 +248,8 @@ class Tiles(Enum):  # I should remove these hard codings
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "░░█▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "░░██████████████",
+            "░░██▓▓▓▓▓▓▓▓▓▓▓▓",
+            "░░░█████████████",
             "░░░░░░░░░░░░░░░░",
             "░░░░░░░░░░░░░░░░"
         ]
@@ -274,10 +278,6 @@ class Tiles(Enum):  # I should remove these hard codings
 
     ENTRANCE = 13, "∩", "\n".join(
         [
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▄▄▄▄▄▄▄▄▓▓▓▓",
             "▓▓▓▓▌░░░░░░▐▓▓▓▓",
             "▓▓▓▓▌░░░░░░▐▓▓▓▓",
@@ -285,11 +285,15 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▌░░░░░░▐▓▓▓▓",
             "▓▓▓▓▌░░░░░░▐▓▓▓▓",
             "▓▓▓▓▌░░░░░░▐▓▓▓▓",
-            "▓▓▓▓▌░░░░░░▐▓▓▓▓",
+            "▓▓▓▓▌░░∩∩░░▐▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
         ]
     )
 
@@ -299,14 +303,14 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
-            "▓▓▓▓◙◙◙◙◙◙◙◙▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓◙◙▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓◙◙▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
@@ -320,19 +324,20 @@ class Tiles(Enum):  # I should remove these hard codings
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
-            "▓▓▓▓⌂⌂⌂⌂⌂⌂⌂⌂▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓⌂⌂▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓⌂⌂▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓",
             "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓"
         ]
+
     )
 
     def __new__(cls, value, char, tile):
@@ -361,25 +366,19 @@ class Tiles(Enum):  # I should remove these hard codings
     def __str__(self):
         return self.char
 
-    @classmethod
-    def get_tile_from_char(cls, char) -> str:
-        for tile in cls:
-            if tile.char == char:
-                return tile.tile
-
     @staticmethod
-    def convert_to_tiles(char_grid):
-        grid = []
-        for column in char_grid:
+    def convert_to_tiles(grid):
+        _grid = []
+        for column in grid:
             col = []
             for row in column:
-                col.append([list(row) for row in Tiles.get_tile_from_char(row).split("\n")])
+                col.append([list(_row) for _row in row.tile.split("\n")])
             for row in zip(*col):
                 _t = []
                 for t in row:
                     _t.extend(t)
-                grid.append(_t)
-        return grid
+                _grid.append(_t)
+        return _grid
 
     @staticmethod
     def excluded_from_generation():
@@ -391,14 +390,11 @@ class Tiles(Enum):  # I should remove these hard codings
 
     @classmethod
     def walkable(cls):
-        return ["▓", "⌂", "◙"]
+        # everything but VOID
+        return [t for t in cls if t != Tiles.VOID]
 
     def is_walkable(self):
-        return self.char in self.walkable
-
-    @staticmethod
-    def get_walkable_tiles(grid: list[list[str]]):
-        return [[tile in Tiles.walkable() for tile in row] for row in grid]
+        return self in self.walkable
 
     @staticmethod
     def pretty_print_tiles(tile_grid):
@@ -430,6 +426,13 @@ class Tiles(Enum):  # I should remove these hard codings
                     raise Exception(f"Invalid tile: {char}")
                 tile_set[-1].append(tile)
         return tile_set
+
+    @classmethod
+    def tiles(cls):
+        return [(t.name, t.tile) for t in cls]
+
+    def get_tile_image(self):
+        return am.get_image(self.name + ".png")
 
 
 class Direction(Enum):
@@ -473,3 +476,21 @@ class Direction(Enum):
     @property
     def y(self):
         return self.value[1]
+
+
+if __name__ == "__main__":
+    # get the tile for each Tile in Tiles and write to a pygame surface, tile across tile_surface and then save to file
+    import pygame
+
+    pygame.init()
+    font = pygame.font.SysFont("monospace", 1)
+    # font color
+    font_color = (200, 255, 220)
+    tile_surface = pygame.Surface((16, 16))
+    for tile in Tiles:
+        for index, row in enumerate(tile.tile.split("\n")):
+            for index2, char in enumerate(row):
+                tile_surface.blit(font.render(char, True, font_color), (index2, index))
+        pygame.image.save(tile_surface, f"{tile.name}.png")
+        tile_surface.fill((0, 0, 0))
+    pygame.quit()

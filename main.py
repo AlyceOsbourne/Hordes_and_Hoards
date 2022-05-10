@@ -1,5 +1,5 @@
-from pygame_core import game
+from pygame_core import get_game
 
 if __name__ == '__main__':
-    game.test(False, True)
-    # game.run()
+    # game.test(False, True)
+    get_game().run()

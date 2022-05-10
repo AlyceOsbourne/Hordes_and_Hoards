@@ -13,51 +13,51 @@ from test_functions import time_it
 VERBOSE = False
 
 sample = "\n".join([
-    "░░░░░░░░░░░░░░░░╔══════════════╗",
-    "░╔╗╔╗░╔══╗░╔══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╚╝╚╝░║░░║░║▓▓║░║▓╔╗╔╗▓▓▓▓╔╗╔╗▓║",
-    "░╔╗╔╗░║░░║░║▓▓║░║▓╚╬╬╝▓▓▓▓╚╩╩╝▓║",
-    "░╚╝╚╝░╚══╝░╚══╝░║▓╔╬╬╗▓▓▓▓╔╦╦╗▓║",
-    "░░░░░░░░░░░░░░░░║▓╚╝╚╝▓▓▓▓╚╝╚╝▓║",
-    "░╔═╦═╗░░░╔═╦═╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░║░║░║╔╦╗║▓║▓║░░║▓║▓═▓╗▓╔▓╝▓╚▓▓║",
-    "░╠═╬═╣╠╬╣╠═╬═╣░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░║░║░║╚╩╝║▓║▓║░░║▓▓╦▓╩▓╣▓╠▓╬▓▓▓║",
-    "░╚═╩═╝░░░╚═╩═╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░╔══╦══╗╔══╦══╗░║▓╔╗╔╗▓▓▓▓╔╗╔╗▓║",
-    "░║╔═╩═╗║║╔═╬═╗║░║▓╚╝╚╝▓▓▓▓╚╣╠╝▓║",
-    "░║║▓▓▓║║║║╔╩╗║║░║▓╔╗╔╗▓▓▓▓╔╣╠╗▓║",
-    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░║▓╚╝╚╝▓▓▓▓╚╝╚╝▓║",
-    "░║║▓▓▓║║║║╚╦╝║║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░║╚═╦═╝║║╚═╬═╝║░║╔═╦═╗▓▓▓╔═╦═╗▓║",
-    "░╚══╩══╝╚══╩══╝░║║░║░║╔╦╗║▓║▓║▓║",
-    "░░░╔╗╔╗░░╔╗╔╗░░░║╠═╬═╣╠╬╣╠═╬═╣▓║",
-    "░░░╚╩╩╝░░╚╣╠╝░░░║║░║░║╚╩╝║▓║▓║▓║",
-    "░░░╔╦╦╗░░╔╣╠╗░░░║╚═╩═╝▓▓▓╚═╩═╝▓║",
-    "░░░╚╝╚╝░░╚╝╚╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░╔═╗░░░░╔╗╔╗░░║▓╔╗╔╗▓▓▓▓▓╔═╗▓║",
-    "░░░╚╦╝░░░░║╠╣║░░║▓║╠╣║▓▓▓▓▓╚╦╝▓║",
-    "░░░╔╩╗░░░░╚╝╚╝░░║▓╚╝╚╝▓▓▓▓▓╔╩╗▓║",
-    "░░░╚═╝░░░░░░░░░░║▓▓▓▓▓▓▓▓▓▓╚═╝▓║",
-    "░░╔╗░░░░░░░╔╗░░░║▓╔╦╦╗▓▓▓▓▓▓▓▓▓║",
-    "░░╠╝░░░░░░░╚╣░░░║▓║╠╣║▓▓▓▓▓▓▓▓▓║",
-    "░╔╣░░╔═══╗░░╠╗░░║▓╚╩╩╝▓▓▓▓▓▓▓▓▓║",
-    "░╚╝╔╗╚═══╝╔╗╚╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░░╚╩╦╗░╔╦╩╝░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╔═══╗╚╝░╚╝╔═══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "╚═══╝░░░░░╚═══╝░║▓▓▓◙▓▓▓▓▓▓⌂▓▓▓║",
-    "░░╔╦╦╗░░░╔╗╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░║╠╣║░░░╚╬╬╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓║",
-    "░░╚╩╩╝░░░╔╬╬╗░░░╚══════════════╝",
-    "░░░░░░╔╗░╚╝╚╝░░░░░░░░░░░░░░░░░░░",
-    "░░░░░╔╝╚╗░░░░░░░░░░░░░░░░░░░░░░░",
-    "░░░░░╚╗╔╝░░░░░░░░░░░░░░░░░░░░░░░",
-    "░╔═╗░░╚╝░░╔═╗░░░░░░░░░░░░░░░░░░░",
-    "╔╝░╚╗░░░░╔╝▓╚╗░░░░╔═══╗░░░░░░░░░",
-    "║░░░║░░░░║▓▓▓║░░░░║░░░║░╔═╗░░░░░",
-    "╚╗░╔╝░░░░╚╗▓╔╝░░░░║░∩░║░║∩║░░░░░",
-    "░╚═╝░░░░░░╚═╝░░░░░║░║░║░║║║░░░░░",
-    "░░░░░░░░░░░░░░░░░░╚═╩═╝░╚╩╝░░░░░",
+    "░░░░░░░░░░░░░░░░╔═════════════════════════════════════════════╗░░░░░░░░░░░░░░░░░░░",
+    "░╔╗╔╗░╔══╗░╔══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╚╝╚╝░║░░║░║▓▓║░║▓╔╗╔╗▓▓▓▓╔╗╔╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╔╗╔╗░║░░║░║▓▓║░║▓╚╬╬╝▓▓▓▓╚╩╩╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╚╝╚╝░╚══╝░╚══╝░║▓╔╬╬╗▓▓▓▓╔╦╦╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░░░░░░░░░░░░░░║▓╚╝╚╝▓▓▓▓╚╝╚╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╔═╦═╗░░░╔═╦═╗░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░║░║░║╔╦╗║▓║▓║░░║▓║▓═▓╗▓╔▓╝▓╚▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╠═╬═╣╠╬╣╠═╬═╣░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░║░║░║╚╩╝║▓║▓║░░║▓▓╦▓╩▓╣▓╠▓╬▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╚═╩═╝░░░╚═╩═╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╔══╦══╗╔══╦══╗░║▓╔╗╔╗▓▓▓▓╔╗╔╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░║╔═╩═╗║║╔═╬═╗║░║▓╚╝╚╝▓▓▓▓╚╣╠╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░║║▓▓▓║║║║╔╩╗║║░║▓╔╗╔╗▓▓▓▓╔╣╠╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╠╣▓▓▓╠╣╠╬╣▓╠╬╣░║▓╚╝╚╝▓▓▓▓╚╝╚╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░║║▓▓▓║║║║╚╦╝║║░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░║╚═╦═╝║║╚═╬═╝║░║╔═╦═╗▓▓▓╔═╦═╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╚══╩══╝╚══╩══╝░║║░║░║╔╦╗║▓║▓║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╔╗╔╗░░╔╗╔╗░░░║╠═╬═╣╠╬╣╠═╬═╣▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╚╩╩╝░░╚╣╠╝░░░║║░║░║╚╩╝║▓║▓║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╔╦╦╗░░╔╣╠╗░░░║╚═╩═╝▓▓▓╚═╩═╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╚╝╚╝░░╚╝╚╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╔═╗░░░░╔╗╔╗░░║▓╔╗╔╗▓▓▓▓▓╔═╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╚╦╝░░░░║╠╣║░░║▓║╠╣║▓▓▓▓▓╚╦╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╔╩╗░░░░╚╝╚╝░░║▓╚╝╚╝▓▓▓▓▓╔╩╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╚═╝░░░░░░░░░░║▓▓▓▓▓▓▓▓▓▓╚═╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░╔╗░░░░░░░╔╗░░░║▓╔╦╦╗▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░╠╝░░░░░░░╚╣░░░║▓║╠╣║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╔╣░░╔═══╗░░╠╗░░║▓╚╩╩╝▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░╚╝╔╗╚═══╝╔╗╚╝░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░░╚╩╦╗░╔╦╩╝░░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "╔═══╗╚╝░╚╝╔═══╗░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "╚═══╝░░░░░╚═══╝░║▓▓▓◙▓▓▓▓▓▓⌂▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░╔╦╦╗░░░╔╗╔╗░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░║╠╣║░░░╚╬╬╝░░░║▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓║░░░░░░░░░░░░░░░░░░░",
+    "░░╚╩╩╝░░░╔╬╬╗░░░╚═════════════════════════════════════════════╝░░░░░░░░░░░░░░░░░░░",
+    "░░░░░░╔╗░╚╝╚╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "░░░░░╔╝╚╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "░░░░░╚╗╔╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "░╔═╗░░╚╝░░╔═╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "╔╝░╚╗░░░░╔╝▓╚╗░░░░╔═══╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "║░░░║░░░░║▓▓▓║░░░░║░░░║░╔═╗░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "╚╗░╔╝░░░░╚╗▓╔╝░░░░║░∩░║░║∩║░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "░╚═╝░░░░░░╚═╝░░░░░║░║░║░║║║░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
+    "░░░░░░░░░░░░░░░░░░╚═╩═╝░╚╩╝░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░",
 ])
 
 
@@ -86,33 +86,29 @@ class RuleSet:
                     adj_x, adj_y = (x + _direction.value[0], y + _direction.value[1])
                     if VERBOSE:
                         print(f"Adjacent tile at {adj_x}, {adj_y}")
-                    if wrap_around:
-                        if adj_x < 0:
-                            if VERBOSE:
-                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_x - len(tiles))
-                            adj_x = -difference
-                            # adj_x = len(tiles) - 1
-                        if adj_y < 0:
-                            if VERBOSE:
-                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_y - len(tiles[x]))
-                            adj_y = -difference
-                            # adj_y = len(tiles[x]) - 1
-                        if adj_x >= len(tiles):
-                            if VERBOSE:
-                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_x - len(tiles))
-                            adj_x = difference
-                            # adj_x = 0
-                        if adj_y >= len(tiles[x]):
-                            if VERBOSE:
-                                print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
-                            difference = abs(adj_y - len(tiles[x]))
-                            adj_y = difference
-                            # adj_y = 0
-                    else:
-                        if adj_x < 0 or adj_y < 0 or adj_x >= len(tiles) or adj_y >= len(tiles[x]):
+                    if adj_x < 0 or adj_y < 0 or adj_x >= len(tiles) or adj_y >= len(tiles[x]):
+                        if wrap_around:
+                            if adj_x < 0:
+                                if VERBOSE:
+                                    print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                                difference = abs(adj_x - len(tiles))
+                                adj_x = -difference
+                            if adj_y < 0:
+                                if VERBOSE:
+                                    print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                                difference = abs(adj_y - len(tiles[x]))
+                                adj_y = -difference
+                            if adj_x >= len(tiles):
+                                if VERBOSE:
+                                    print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                                difference = abs(adj_x - len(tiles))
+                                adj_x = difference
+                            if adj_y >= len(tiles[x]):
+                                if VERBOSE:
+                                    print(f"Adjacent tile at {adj_x}, {adj_y} is out of bounds, wrapping")
+                                difference = abs(adj_y - len(tiles[x]))
+                                adj_y = difference
+                        else:
                             continue
                     if _direction not in rules[tiles[x][y]]:
                         rules[tiles[x][y]][_direction] = set()
@@ -171,16 +167,16 @@ class NodeGrid:
         random.seed(seed)
 
     @time_it
-    def start_generation(self, pregen=True, max_iterations=50):
+    def generate_dungeon(self, pregen=True, wrap=False, max_iterations=50):
         grid = None
         iteration = 0
         if VERBOSE:
             print("Starting Generation.")
-        while grid is None and iteration < max_iterations:
+        while (grid is None or not self.verify_and_clean_map(grid, wrap)) and iteration < max_iterations:
             iteration += 1
             if VERBOSE:
                 print(f"Current Iteration: {iteration}")
-            grid = self.generate(pregen)
+            grid = self.generate(pregen, wrap)
         if VERBOSE:
             print()
         if grid is None:
@@ -190,59 +186,20 @@ class NodeGrid:
             if VERBOSE:
                 print(f"Generation took {iteration} iterations")
             self.grid = grid
+            return self.collapse_to_tile()
 
-    def generate(self, pregen=True):
+    def generate(self, pregen, wrap):
         grid = [[Node((x, y), self.ruleset) for y in range(self.height)] for x in range(self.width)]
-        ################################################################################################################
         if pregen:
-            for x in range(self.width):
-                grid[x][0].potential = {Tiles.VOID}
-                self.propagate_node(grid[x][0], grid)
-                grid[x][-1].potential = {Tiles.VOID}
-                self.propagate_node(grid[x][-1], grid)
-            for y in range(self.height):
-                grid[0][y].potential = {Tiles.VOID}
-                self.propagate_node(grid[0][y], grid)
-                grid[-1][y].potential = {Tiles.VOID}
-                self.propagate_node(grid[-1][y], grid)
-            door_node = None
-            while door_node is None or door_node.is_collapsed():
-                door_node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            door_node.potential = {Tiles.ENTRANCE}
-            self.propagate_node(door_node, grid)
-            boss_node = None
-            while boss_node is None or boss_node.is_collapsed():
-                boss_node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            boss_node.potential = {Tiles.BOSS}
-            self.propagate_node(boss_node, grid)
-            hoard_node = None
-            while hoard_node is None or hoard_node.is_collapsed():
-                hoard_node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-            hoard_node.potential = {Tiles.HOARD}
-            self.propagate_node(hoard_node, grid)
-            for _ in range(2 + ((self.width + self.height) // 8)):
-                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-                while Tiles.FLOOR not in node.potential or len(node.potential) < 2:
-                    node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
-                node.potential = {Tiles.FLOOR}
-                self.propagate_node(node, grid)
-                for adj, _ in self.get_adjacents(node, grid):
-                    if Tiles.FLOOR in adj.potential and random.randint(0, 10):
-                        adj.potential = {Tiles.FLOOR}
-                        self.propagate_node(adj, grid)
-
-        ################################################################################################################
+            self.pregenerate(grid, wrap)
         while (node := self.get_lowest_entropy(grid)) is not None:
-            if VERBOSE:
-                self.print_grid(grid)
             if node.collapse():
-                self.propagate_node(node, grid)
+                self.propagate_node(node, grid, wrap)
             else:
-                if VERBOSE:
-                    print("\nFailed to collapse node, please try and create valid rule")
-                    self.print_grid(grid)
+                # pretty print grid
+                self.pretty_print(grid)
                 return None
-        return grid
+        return grid if grid is not None else None
 
     @staticmethod
     def get_lowest_entropy(grid):
@@ -261,37 +218,8 @@ class NodeGrid:
             lowest_node = random.choice(by_entropy[lowest_entropy])
         return lowest_node
 
-    @staticmethod
-    def print_grid(grid):
-        colours = {
-            "red": '\033[91m',
-            "green": '\033[92m',
-            "blue": '\033[94m',
-            "end": '\033[0m'
-        }
-        print()
-        for x in range(len(grid)):
-            for y in range(len(grid[x])):
-                if grid[x][y].is_collapsed():
-                    tile = next(iter(grid[x][y].potential))
-                    print(f"{colours['green']}{tile:^2}{colours['end']}", end="")
-                elif len(grid[x][y].potential) > 1:
-                    print(f"{colours['blue']}{int(grid[x][y].entropy()):^2}{colours['end']}", end="")
-                else:
-                    print(f"{colours['red']}{'█':^2}{colours['end']}", end="")
-            print()
-
-    @staticmethod
-    def pretty_print_grid(grid):
-        if grid is not None:
-            for x in range(len(grid)):
-                for y in range(len(grid[x])):
-                    tile = next(iter(grid[x][y].potential))
-                    print(f"{tile}", end="")
-                print()
-
-    def propagate_node(self, node, grid):
-        queue = deque(((self.get_adjacents(node, grid), node.potential),))
+    def propagate_node(self, node, grid, wrap):
+        queue = deque(((self.get_adjacents(node, grid, wrap=wrap), node.potential),))
         seen = {node}
         while len(queue) > 0:
             adjacents, potentials = queue.pop()
@@ -301,25 +229,128 @@ class NodeGrid:
                     for potential in potentials:
                         adjacent.constrain_potential(potential, direction)
                     if adjacent.is_collapsed():
-                        queue.appendleft((self.get_adjacents(adjacent, grid), adjacent.potential))
+                        queue.appendleft((self.get_adjacents(adjacent, grid, wrap=wrap), adjacent.potential))
 
-    def get_adjacents(self, node, grid):
+    def get_adjacents(self, node, grid, wrap):
         for direction in [Direction.North, Direction.East, Direction.South, Direction.West]:
             adj_x, adj_y = node.x + direction.x, node.y + direction.y
-            if not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height):
+            if not wrap:
+                if not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height):
+                    yield grid[adj_x][adj_y], direction
+            else:
+                if adj_x < 0:
+                    adj_x = self.width - 1
+                elif adj_x >= self.width:
+                    adj_x = 0
+                if adj_y < 0:
+                    adj_y = self.height - 1
+                elif adj_y >= self.height:
+                    adj_y = 0
                 yield grid[adj_x][adj_y], direction
 
-    def collapse_to_char_grid(self):
-        collapsed_grid = [[None for _ in range(self.width)] for _ in range(self.height)]
-        for x in range(len(self.grid)):
-            for y in range(len(self.grid[x])):
-                node = self.grid[x][y]
-                if node.is_collapsed():
-                    collapsed_grid[x][y] = next(iter(node.potential)).char
-        return collapsed_grid
+    def pregenerate(self, grid, wrap=False):
+        if not wrap:
+            for x in range(self.width):
+                grid[x][0].potential = {Tiles.VOID}
+                self.propagate_node(grid[x][0], grid, wrap)
+                grid[x][-1].potential = {Tiles.VOID}
+                self.propagate_node(grid[x][-1], grid, wrap)
+            for y in range(self.height):
+                grid[0][y].potential = {Tiles.VOID}
+                self.propagate_node(grid[0][y], grid, wrap)
+                grid[-1][y].potential = {Tiles.VOID}
+                self.propagate_node(grid[-1][y], grid, wrap)
+        node_types = [Tiles.ENTRANCE, Tiles.BOSS, Tiles.HOARD]
+        for node_type in node_types:
+            node = None
+            while node is None:
+                check = grid[random.randint(1, self.width - 2)][random.randint(1, self.height - 2)]
+                if not check.is_collapsed():
+                    for direction in Direction:
+                        for scale in range(1, 10):
+                            adj_x, adj_y = check.x + direction.x * scale, check.y + direction.y * scale
+                            if wrap:
+                                if adj_x < 0:
+                                    adj_x = self.width - 1
+                                elif adj_x >= self.width:
+                                    adj_x = 0
+                                if adj_y < 0:
+                                    adj_y = self.height - 1
+                                elif adj_y >= self.height:
+                                    adj_y = 0
+                            if not wrap and not (adj_x < 0 or adj_x >= self.width or adj_y < 0 or adj_y >= self.height) \
+                                    or grid[adj_x][adj_y].is_collapsed():
+                                break
+                    else:
+                        node = check
 
-    @classmethod
-    def generate_grid(cls, param, param1):
-        wfc = cls((param, param1))
-        wfc.start_generation()
-        return Tiles.convert_to_tiles(wfc.collapse_to_char_grid())
+            node.potential = {node_type}
+            self.propagate_node(node, grid, wrap)
+
+        for _ in range(2 + ((self.width + self.height) // 8)):
+            node = None
+            while node is None or Tiles.FLOOR not in node.potential or node.is_collapsed():
+                node = grid[random.randint(0, self.width - 1)][random.randint(0, self.height - 1)]
+            node.potential = {Tiles.FLOOR}
+            self.propagate_node(node, grid, wrap)
+            for adj, _ in self.get_adjacents(node, grid, wrap):
+                if Tiles.FLOOR in adj.potential and random.randint(0, 10):
+                    adj.potential = {Tiles.FLOOR}
+                    self.propagate_node(adj, grid, wrap)
+
+    def collapse_to_tile(self):
+        collapsed = [[next(iter(node.potential)) for node in row] for row in self.grid]
+        return collapsed
+
+    @staticmethod
+    def pretty_print(grid):
+        # if collapsed print char, if potential len > 1 print len, if potential ==0 print ? in red
+        for row in grid:
+            for node in row:
+                if node.is_collapsed():
+                    print(f" \033[92m{next(iter(node.potential))}\33[0m", end=" ")
+                elif len(node.potential) == 0:
+                    print(" \033[91m?\033[0m", end=" ")
+                else:
+                    print(f"\033[90m{len(node.potential):3}\033[0m", end="")
+            print()
+
+    def verify_and_clean_map(self, grid, wrap, fast=True):
+        entrance = None
+        hoard = None
+        boss = None
+        walked = set()
+        queue = deque()
+        # find entrance, hoard, boss
+        for row in grid:
+            for node in row:
+                if Tiles.ENTRANCE in node.potential:
+                    entrance = node
+                if Tiles.HOARD in node.potential:
+                    hoard = node
+                if Tiles.BOSS in node.potential:
+                    boss = node
+        # find all walkable nodes
+        queue.append(entrance)
+        while queue:
+            node = queue.popleft()
+            if node not in walked:
+                walked.add(node)
+                for adj, _ in self.get_adjacents(node, grid, wrap):
+                    if next(iter(adj.potential)) in Tiles.walkable() and adj not in walked:
+                        queue.append(adj)
+
+        if entrance not in walked or hoard not in walked or boss not in walked:
+            return False
+
+        for row in grid:
+            for node in row:
+                if node not in walked and next(iter(node.potential)) in Tiles.walkable():
+                    node.potential = {Tiles.VOID}
+        return True
+
+
+
+
+
+
