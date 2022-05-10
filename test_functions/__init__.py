@@ -64,7 +64,6 @@ def time_it_min(expected_time):
                 print(f"{func.__name__} took \033[91m{end - start:2f}\033[0m seconds, "
                       f"expected a maximum of {expected_time} seconds, {random.choice(random_insults)}")
             return result
-
         return wrapper
 
     return decorator
