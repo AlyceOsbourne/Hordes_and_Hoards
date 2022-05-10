@@ -30,11 +30,10 @@ def generate_dungeon(event):
         font = pygame.font.SysFont("monospace", 1)
         font.set_bold(True)
         for y in range(len(dungeon)):
-                for x in range(len(dungeon[y])):
-                    tile = dungeon[y][x].get_tile_image().convert()
-                    dungeon_surface.blit(tile, (x * TILE_SIZE, y * TILE_SIZE))
+            for x in range(len(dungeon[y])):
+                tile = dungeon[y][x].get_tile_image().convert()
+                dungeon_surface.blit(tile, (x * TILE_SIZE, y * TILE_SIZE))
 
 
 def render(screen):
     screen.blit(dungeon_surface, (0, 0))
-
