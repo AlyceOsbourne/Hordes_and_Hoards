@@ -3,7 +3,7 @@ from core_modules.ui.debug import init as debug_init, render_debug_info
 from core_modules.ui.console import init as console_init, render as console_render
 
 game = get_game()
-eh, am, sm = game.handles
+eh, ah, sh = game.handles
 
 
 def init():
@@ -13,9 +13,9 @@ def init():
     print("Console Screen Initialized")
 
 
-
 def update():
     pass
+
 
 def render(screen):
     render_debug_info(screen)
