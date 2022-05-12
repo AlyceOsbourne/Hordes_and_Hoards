@@ -1,4 +1,4 @@
-from pygame_core import get_game
+from pygame_interface import get_game
 game = get_game()
 game.title = "Hordes and Hoards"
 if __name__ == '__main__':

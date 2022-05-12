@@ -1,6 +1,6 @@
-from pygame_core import *
-from core_modules.ui.debug import init as debug_init, render_debug_info
-from core_modules.ui.console import init as console_init, render as console_render
+from pygame_interface import *
+from .debug import init as debug_init, render_debug_info as debug_render
+from .console import init as console_init, render as console_render
 
 game = get_game()
 eh, ah, sh = game.handles
@@ -18,5 +18,5 @@ def update():
 
 
 def render(screen):
-    render_debug_info(screen)
+    debug_render(screen)
     console_render(screen)

@@ -1,9 +1,6 @@
-from pygame_core import *
-from .client import *
-from .server import *
-from core_modules.socket_manager.connection import *
-from core_modules.socket_manager.server import *
-from core_modules.socket_manager.client import *
+from pygame_interface import *
+from .connection import *
+
 game = get_game()
 event_handler, asset_handler, state_handler = game.handles
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from pygame_core import *
+from pygame_interface import *
 
 game = get_game()
 event_handler, asset_handler, state_handler = game.handles

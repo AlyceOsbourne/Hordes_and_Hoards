@@ -1,6 +1,6 @@
 import pygame
 
-from pygame_core import get_game
+from pygame_interface import get_game
 
 game = get_game()
 event_handler, asset_handler, state_handler = game.handles

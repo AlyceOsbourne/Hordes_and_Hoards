@@ -4,10 +4,9 @@ import os
 import psutil
 import pygame
 
-# TODO! make the asset manager work on other platforms as files only seem to load on windows
-from pygame_core.asset_handler import AssetHandler
-from pygame_core.event_handler import EventHandler
-from pygame_core.state_handler import StateHandler
+from .asset_handler import AssetHandler
+from .event_handler import EventHandler
+from .state_handler import StateHandler
 
 pygame.init()
 

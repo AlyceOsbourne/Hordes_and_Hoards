@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pygame_core import *
+from pygame_interface import *
 
 event_handler, asset_handler, state_handler = get_game().handles
 

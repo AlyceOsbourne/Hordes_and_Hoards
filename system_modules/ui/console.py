@@ -2,7 +2,7 @@
 
 from collections import deque
 
-from pygame_core import *
+from pygame_interface import *
 
 game = get_game()
 eh, am, sm, = game.handles

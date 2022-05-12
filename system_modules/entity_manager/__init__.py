@@ -2,7 +2,7 @@ from abc import ABCMeta
 
 from pygame.sprite import Sprite
 
-from pygame_core import *
+from pygame_interface import *
 
 game = get_game()
 event_handler, asset_handler, state_handler = game.handles
