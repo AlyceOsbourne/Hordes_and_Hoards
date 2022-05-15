@@ -3,7 +3,8 @@ import threading
 import socketserver
 import time
 import json
-from functools import partial
+from abc import abstractmethod, ABCMeta
+
 from lz4.block import compress, decompress
 
 HEADER_LENGTH = 12
@@ -11,9 +12,8 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = '%DISCONNECT%'
 
 
-class _Handler(socketserver.BaseRequestHandler):
+class _Handler(socketserver.BaseRequestHandler, metaclass=ABCMeta):
     def handle(self):
-        print(f"{self.client_address[0]}:{self.client_address[1]} connected")
         while True:
             try:
                 message_len = int(self.request.recv(HEADER_LENGTH).decode(FORMAT))
@@ -22,8 +22,7 @@ class _Handler(socketserver.BaseRequestHandler):
                     self.disconnect()
                 else:
                     self.handle_message(message)
-            except Exception as e:
-                print(f"{self.client_address[0]}:{self.client_address[1]} disconnected")
+            except socket.error:
                 break
 
     def send_message(self, message):
@@ -36,15 +35,15 @@ class _Handler(socketserver.BaseRequestHandler):
         self.send_message(DISCONNECT_MESSAGE)
         self.request.close()
 
+    @abstractmethod
     def handle_message(self, message):
-        print(f"{self.client_address[0]}:{self.client_address[1]} sent {message}")
+        ...
 
 
-class _Client:
-    def __init__(self, address, message_handler):
+class _Client(metaclass=ABCMeta):
+    def __init__(self, address):
         self.host, self.port = address
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.message_handler = message_handler
 
     def send_message(self, message: str):
         message = compress(json.dumps(message).encode(FORMAT))
@@ -58,30 +57,31 @@ class _Client:
             message_len = int(message_len)
             message = decompress(self.socket.recv(message_len)).decode(FORMAT)
             if message:
-                return json.loads(message)
+                message = json.loads(message)
+                if message == DISCONNECT_MESSAGE:
+                    self.disconnect()
+                else:
+                    self.handle_message(message)
 
     def disconnect(self):
         self.socket.close()
 
+
     def run(self):
         self.socket.connect((self.host, self.port))
         while True:
-            message = self.receive_message()
-            if message:
-                self.handle_message(message)
-            time.sleep(0.1)
+            self.receive_message()
 
+
+    @abstractmethod
     def handle_message(self, message):
-        if message == DISCONNECT_MESSAGE:
-            self.disconnect()
-        else:
-            self.message_handler(message)
+        ...
 
 
 def init():
     ADDR = (socket.gethostbyname(socket.gethostname()), 9090)
     server = socketserver.TCPServer(ADDR, _Handler)
-    client = _Client(ADDR, print)
+    client = _Client(ADDR)
     server_thread = threading.Thread(target=server.serve_forever)
     client_thread = threading.Thread(target=client.run)
     server_thread.start()

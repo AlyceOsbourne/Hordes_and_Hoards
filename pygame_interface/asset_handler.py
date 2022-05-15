@@ -4,7 +4,8 @@ from functools import partial
 import pygame
 
 
-# TODO! make the asset manager work on other platforms as files only seem to load on windows
+# TODO! make the asset manager work on other platforms as files only seem to load on windows,
+#  I assume something to do with path, probably need to make it all joins to make it os specific
 class AssetHandler:
     """
     Handles the loading of assets from disk and caches them ready for use
