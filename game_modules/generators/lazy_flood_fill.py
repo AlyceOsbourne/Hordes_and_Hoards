@@ -61,12 +61,14 @@ def lazy_flood_fill(grid: np.ndarray,
                     and chance >= random.randint(0, 100):
                 queue.append(neighbour)
                 chance -= decay_rate
-                decay_rate += decay_rate // 3
     return grid
 
 
 def draw_flood(array: np.ndarray):
-    palette = {0: (0, 0, 0)}
+    palette = {
+        -1: (50, 50, 50),
+        0: (0, 0, 0)
+    }
     for row in array:
         for value in row:
             if value not in palette:
