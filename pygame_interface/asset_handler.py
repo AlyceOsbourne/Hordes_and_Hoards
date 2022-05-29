@@ -45,8 +45,11 @@ class AssetHandler:
                     print(f"\rUnrecognized file type for: {file_name}")
                     continue
 
-    def get_image(self, image_name: str):
-        return self.assets["images"][image_name]
+    def get_image(self, image_name: str, /, optimize_alpha: bool = False):
+        return \
+            self.assets["images"][image_name].convert_alpha() \
+            if optimize_alpha \
+            else self.assets["images"][image_name].convert()
 
     def get_sound(self, sound_name: str):
         return self.assets["sounds"][sound_name]

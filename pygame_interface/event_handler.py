@@ -1,6 +1,8 @@
 from itertools import count
+from typing import Union
 
 import pygame
+from pygame.event import Event
 
 
 class EventHandler:
@@ -25,11 +27,11 @@ class EventHandler:
         if event_type in self.handlers:
             self.handlers[event_type].remove(handler)
 
-    def handle(self, event, event_data=None):
+    def handle(self, event: Union[str, int, Event], **event_data):
         if isinstance(event, str):
             event = self.custom_events[event]
         if isinstance(event, int):
-            if event_data is not None:
+            if len(event_data) > 0:
                 event = pygame.event.Event(event, event_data)
             else:
                 event = pygame.event.Event(event)
@@ -42,7 +44,7 @@ class EventHandler:
             if not isinstance(event, tuple):
                 self.handle(event)
             else:
-                self.handle(event[0], event[1])
+                self.handle(event[0], **event[1])
 
     def create_event(self, event_name: str):
         event_id = next(self.custom_event_ids)
@@ -51,15 +53,16 @@ class EventHandler:
         print(f"Created custom event type {event_name} with id {event_id}")
         return event_name, event_id,
 
-    def delete_custom_event(self, event_name: str):
+    def delete_event(self, event_name: str):
         del self.custom_events[event_name]
         del self.handlers[self.custom_events[event_name]]
 
-    def get_custom_event_name(self, event_id):
+    def get_event_name(self, event_id):
         for event_name, event_id_ in self.custom_events.items():
             if event_id_ == event_id:
                 return event_name
-        return None
+        else:
+            return pygame.event.event_name(event_id)
 
     def get_custom_event_id(self, event_name):
         if event_name in self.custom_events:

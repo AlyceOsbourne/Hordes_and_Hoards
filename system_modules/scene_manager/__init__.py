@@ -8,6 +8,14 @@ game = get_game()
 event_handler, asset_handler, state_handler = game.handles
 
 
+def init():
+    state_handler.add_states(
+        current_scene=None,
+        loaded_scenes={},
+        scene_stack=[],
+    )
+
+
 class Scene(metaclass=ABCMeta):
     def __init__(self):
         pass
