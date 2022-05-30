@@ -1,3 +1,2 @@
-from game_modules.generators.dungeon import generate
+from game_modules.generators.dungeon import generate_dungeon
 
-generate((100, 100), 10)

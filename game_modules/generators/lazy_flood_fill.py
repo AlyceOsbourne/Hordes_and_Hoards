@@ -18,7 +18,9 @@ def lazy_flood_fill(grid: np.ndarray,
                     start_point: tuple[int, int],
                     fill_value: int,
                     decay_rate: float,
-                    use_cardinal_directions: bool = False):
+                    use_cardinal_directions: bool = False,
+                    increase_entropy_over_time: bool = True
+                    ):
     def get_neighbours(point, cardinal_directions=False):
         x, y = point
         radial = [
@@ -56,29 +58,33 @@ def lazy_flood_fill(grid: np.ndarray,
         point = queue.popleft()
         grid[point] = fill_value
         for neighbour in get_neighbours(point, use_cardinal_directions):
-            if grid[neighbour] == 0 \
-                    and chance >= random.randint(0, 100) \
-                    and chance >= random.randint(0, 100):
+            if grid[neighbour] == 0 and chance >= random.randint(0, 100):
                 queue.append(neighbour)
                 chance -= decay_rate
+        if increase_entropy_over_time:
+            decay_rate -= (decay_rate * (random.random() * 10))
     return grid
 
 
-def draw_flood(array: np.ndarray):
+def draw_flood(array: np.ndarray, show_values: bool = False):
     palette = {
+        -2: (255, 255, 255),
         -1: (50, 50, 50),
         0: (0, 0, 0)
     }
     for row in array:
         for value in row:
             if value not in palette:
-                palette[value] = (random.randint(50, 250), random.randint(50, 250), random.randint(50, 250))
-            print(f"\033[48;2;{palette[value][0]};{palette[value][1]};{palette[value][2]}m   \033[0m", end="")
+                palette[value] = (random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
+            print(
+                f"\033[48;2;{palette[value][0]};{palette[value][1]};{palette[value][2]}m{int(value):^4}\033[0m"
+                if show_values else f"\033[48;2;{palette[value][0]};{palette[value][1]};{palette[value][2]}m   \033[0m",
+                end="")
         print()
 
 
 if __name__ == "__main__":
-    # tart filling grid at regular intervals
+    # tart filling map_grid at regular intervals
     width, height = 60, 60
     step_width = width // 3
     step_height = height // 3
