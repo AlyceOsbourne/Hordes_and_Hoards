@@ -10,7 +10,6 @@ from game_modules.generators.a_star import a_star, distance
 from game_modules.generators.lazy_flood_fill import lazy_flood_fill, draw_flood
 
 
-
 def generate_sites(size: tuple[int, int], num_rooms: int, margin: int, padding: int, euclidian: bool):
     """
     generates a list of site to propagate as rooms, also used to generate_dungeon corridors
@@ -170,14 +169,35 @@ def generate_dungeon(size, /, num_rooms=10, margin=10, padding=30, room_decay=10
 
 
 if __name__ == "__main__":
-    for _ in range(1):
-        map_grid = generate_dungeon((200, 200), num_rooms=30, margin=15, padding=35, room_decay=0.003, corridor_decay=5,
-                                    allow_crossing_corridors=True, euclidian_paths=True, cardinal_fill=False,
-                                    increase_entropy=False)
-        for x in range(map_grid.shape[0]):
-            for y in range(map_grid.shape[1]):
-                print(f"{map_grid[x, y]:^3}" if map_grid[x, y] != 0 else "   ", end="")
-            print()
-        print()
+    from pygame import image, transform
+    import pygame
 
-        draw_flood(map_grid)
+    pygame.init()
+    scale = 1.2
+    map_grid = generate_dungeon((int(144 * scale), int(216 * scale)), num_rooms=int(14 * scale), margin=15, padding=35, room_decay=0.002 / scale,
+                                corridor_decay=5,
+                                allow_crossing_corridors=True, euclidian_paths=True, cardinal_fill=False,
+                                increase_entropy=False)
+    for x in range(map_grid.shape[0]):
+        for y in range(map_grid.shape[1]):
+            print(f"{map_grid[x, y]:^3}" if map_grid[x, y] != 0 else "   ", end="")
+        print()
+    print()
+
+    draw_flood(map_grid)
+
+    # use pygame to draw and save the map
+
+    palette = {-2: (255, 255, 255), -1: (50, 50, 50), 0: (0, 0, 0)}
+    screen = pygame.display.set_mode((map_grid.shape[1], map_grid.shape[0]))
+    screen.fill((0, 0, 0))
+    for x in range(map_grid.shape[0]):
+        for y in range(map_grid.shape[1]):
+            if map_grid[x, y] not in palette:
+                palette[map_grid[x, y]] = (
+                    random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
+            screen.set_at((y, x), palette[map_grid[x, y]])
+    pygame.image.save(transform.scale(screen, (map_grid.shape[1] * 2, map_grid.shape[0] * 2)),
+                      f"dungeon_{np.random.randint(0, 100000)}.png")
+    pygame.quit()
+    print()
