@@ -1,19 +1,33 @@
 import random
+from functools import partial
 
 import numpy as np
 from numpy.random import shuffle
 
-from utils.testing_tools import time_it_min
-
 # TODO: make these imports relative for plugin loader
 from game_modules.generators.a_star import a_star, distance
-from game_modules.generators.lazy_flood_fill import lazy_flood_fill, draw_flood
+from game_modules.generators.lazy_flood_fill import lazy_flood_fill
+from utils.testing_tools import time_it_seconds
+
+scale = .8
+default_dungeon_params = {
+    "size": (int(144 * scale), int(144 * scale)),
+    "num_rooms": int(12 * scale),
+    "margin": 15,
+    "padding": 35,
+    "room_decay": 0.002 / scale,
+    "corridor_decay": 5,
+    "allow_crossing_corridors": True,
+    "euclidian_paths": True,
+    "cardinal_fill": False,
+    "increase_entropy": False
+}
 
 
 def generate_sites(size: tuple[int, int], num_rooms: int, margin: int, padding: int, euclidian: bool):
     """
     generates a list of site to propagate as rooms, also used to generate_dungeon corridors
-    :param size: size of the map
+    :param size: tile_size of the map
     :param num_rooms: the number of sites to be generated
     :param margin: distance from border
     :param padding: distance from other rooms
@@ -24,12 +38,12 @@ def generate_sites(size: tuple[int, int], num_rooms: int, margin: int, padding: 
     x_len, y_len = (list(range(margin, size[0] - margin))), (list(range(margin, size[1] - margin)))
 
     for i in range(1, num_rooms + 1):
-        # if sites len is 0, pick and add any point
+        # if sites len is 0, pick and add any cartesian_coordinate
         if len(sites) == 0:
             site = np.random.randint(margin, size[0] - margin), np.random.randint(margin, size[1] - margin)
             sites[i] = site
         else:
-            # now find sites that are a minimum of size divided by the num of rooms away from all other sites
+            # now find sites that are a minimum of tile_size divided by the num of rooms away from all other sites
             # we do this by finding using ranges
             site = None
             for x in sorted(x_len, key=lambda _: np.random.random()):
@@ -50,7 +64,7 @@ def generate_sites(size: tuple[int, int], num_rooms: int, margin: int, padding: 
 def generate_entrance_path(size, sites, grid, euclidian):
     """
     generates a path from a cell to the border of the map
-    :param size:  size of the map
+    :param size:  tile_size of the map
     :param sites: the points the entrance con be connected too
     :param grid: the map
     :param euclidian: whether to use euclidian distance or manhattan
@@ -109,12 +123,28 @@ def check_map_validity(grid, sites, entrance_path):
     return True
 
 
-@time_it_min(5)
-def generate_dungeon(size, /, num_rooms=10, margin=10, padding=30, room_decay=1000., corridor_decay=0.01,
+def get_neighbours(x, y, grid):
+    return [(x + nx, y + ny) for nx, ny in [(1, 0), (0, 1), (-1, 0), (0, -1)] if
+            0 <= x + nx < len(grid) and 0 <= y + ny < len(grid[x])]
+
+
+def make_walls(grid):
+    # every tile adjacent to point with a value of 0 if that point is not 0 is a wall
+    for x in range(len(grid)):
+        for y in range(len(grid[x])):
+            if grid[x][y] != 0:
+                for nx, ny in get_neighbours(x, y, grid):
+                    if grid[nx][ny] == 0:
+                        grid[x][y] = -10
+                        break
+
+
+@time_it_seconds(5)
+def generate_dungeon(size, num_rooms=10, margin=10, padding=30, room_decay=.0001, corridor_decay=0.01,
                      allow_crossing_corridors=True, euclidian_paths=True, cardinal_fill=True, increase_entropy=False):
     """
-    Generates a dungeon of the specified size.
-    :param size: size of the dungeon
+    Generates a dungeon of the specified tile_size.
+    :param size: tile_size of the dungeon
     :param num_rooms: number of rooms to generate_dungeon
     :param margin: margin to add around the dungeon
     :param padding: minimum distance between rooms
@@ -126,7 +156,7 @@ def generate_dungeon(size, /, num_rooms=10, margin=10, padding=30, room_decay=10
     :param cardinal_fill: whether to fill in cardinal directions
     :param increase_entropy: whether to increase the entropy of the fill algorithm, over time the decay rate decreases
     in small random increments, gives a more branching appearance
-    :return: a dungeon of the specified size
+    :return: a dungeon of the specified tile_size
     """
     grid = np.zeros(size, dtype=int)
     sites = generate_sites(size, num_rooms, margin=margin, padding=padding, euclidian=euclidian_paths)
@@ -158,6 +188,7 @@ def generate_dungeon(size, /, num_rooms=10, margin=10, padding=30, room_decay=10
                     continue  # just so paths don't get so thicc
             lazy_flood_fill(grid, (x, y), -1, (1 / np.random.random()) * corridor_decay, cardinal_fill,
                             increase_entropy)
+
     # TODO!!!! this is a hack, fix it, make this an iterative process rather than a recursive one
     if not check_map_validity(grid, sites, entrance_path):
         # recurse and regenerate
@@ -165,39 +196,11 @@ def generate_dungeon(size, /, num_rooms=10, margin=10, padding=30, room_decay=10
                                 corridor_decay=corridor_decay, allow_crossing_corridors=allow_crossing_corridors,
                                 euclidian_paths=euclidian_paths, cardinal_fill=cardinal_fill,
                                 increase_entropy=increase_entropy)
+    print("valid map")
+    print("Making Walls")
+    make_walls(grid)
+
     return grid
 
 
-if __name__ == "__main__":
-    from pygame import image, transform
-    import pygame
-
-    pygame.init()
-    scale = 1.2
-    map_grid = generate_dungeon((int(144 * scale), int(216 * scale)), num_rooms=int(14 * scale), margin=15, padding=35, room_decay=0.002 / scale,
-                                corridor_decay=5,
-                                allow_crossing_corridors=True, euclidian_paths=True, cardinal_fill=False,
-                                increase_entropy=False)
-    for x in range(map_grid.shape[0]):
-        for y in range(map_grid.shape[1]):
-            print(f"{map_grid[x, y]:^3}" if map_grid[x, y] != 0 else "   ", end="")
-        print()
-    print()
-
-    draw_flood(map_grid)
-
-    # use pygame to draw and save the map
-
-    palette = {-2: (255, 255, 255), -1: (50, 50, 50), 0: (0, 0, 0)}
-    screen = pygame.display.set_mode((map_grid.shape[1], map_grid.shape[0]))
-    screen.fill((0, 0, 0))
-    for x in range(map_grid.shape[0]):
-        for y in range(map_grid.shape[1]):
-            if map_grid[x, y] not in palette:
-                palette[map_grid[x, y]] = (
-                    random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
-            screen.set_at((y, x), palette[map_grid[x, y]])
-    pygame.image.save(transform.scale(screen, (map_grid.shape[1] * 2, map_grid.shape[0] * 2)),
-                      f"dungeon_{np.random.randint(0, 100000)}.png")
-    pygame.quit()
-    print()
+generate_default_dungeon = partial(generate_dungeon, **default_dungeon_params)

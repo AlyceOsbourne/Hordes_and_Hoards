@@ -18,7 +18,7 @@ def debug_screen(func):
 
 
 def init():
-    state_handler.add_states(
+    state_handler.register_states(
         debug_view=False,
         current_debug_view=0
     )

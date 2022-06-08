@@ -2,10 +2,10 @@ import random
 from collections import deque
 from functools import reduce, cache
 import numpy as np
-from utils.testing_tools import time_it_min
+from utils.testing_tools import time_it_seconds
 
 
-@time_it_min(30)
+@time_it_seconds(30)
 def voronoi(sites: list[tuple[int, int]], width: int, height: int):
     # filter sites and assign index
     sites = {
@@ -42,7 +42,7 @@ def voronoi(sites: list[tuple[int, int]], width: int, height: int):
 
     # this can actually be done asynchronously? as no quads will touch other quads
     def process_quad(x1, y1, x2, y2):
-        # quad isn't the size of 1x1
+        # quad isn't the tile_size of 1x1
         if x2 - x1 > 1 and y2 - y1 > 1:
             corner_sites = [set() for _ in range(4)]
             for i, corner in enumerate([(x1, y1), (x2, y1), (x1, y2), (x2, y2)]):

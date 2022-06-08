@@ -36,10 +36,13 @@ class AssetHandler:
                 if file_name.startswith("."):
                     continue
                 if file_name.endswith(".png") or file_name.endswith(".jpg"):
+                    print(f"Loading image: {os.path.join(root, file_name)}")
                     self.load_image(os.path.join(root, file_name))
                 elif file_name.endswith(".wav") or file_name.endswith(".ogg"):
+                    print(f"Loading sound: {os.path.join(root, file_name)}")
                     self.load_sound(os.path.join(root, file_name))
                 elif file_name.endswith(".ttf"):
+                    print(f"Loading font: {os.path.join(root, file_name)}")
                     self.load_font(os.path.join(root, file_name))
                 else:
                     print(f"\rUnrecognized file type for: {file_name}")
@@ -58,7 +61,8 @@ class AssetHandler:
         return self.assets["fonts"][font_name](font_size)
 
     def load_image(self, path: str):
-        self.assets["images"][os.path.basename(path)] = pygame.image.load(path)
+        key = os.path.basename(path)
+        self.assets["images"][key] = pygame.image.load(path)
 
     def load_sound(self, path: str):
         self.assets["sounds"][os.path.basename(path)] = pygame.mixer.Sound(path)

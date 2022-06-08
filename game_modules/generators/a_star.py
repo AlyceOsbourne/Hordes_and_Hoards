@@ -91,7 +91,7 @@ def test():
         end = None
         while start is None or not passable(start, test_map, [0]):
             start = (np.random.randint(1, width - 1), np.random.randint(1, height - 1))
-        while end is None or not passable(end, test_map, [0]) or start == end or distance(start, end) < min(width // 2, height // 2):
+        while end is None or not passable(end, test_map, [0]) or start == end or distance(start, end, False) < min(width // 2, height // 2):
             end = (np.random.randint(1, width - 1), np.random.randint(1, height - 1))
 
         path = a_star(start, end, test_map, [0])

@@ -32,7 +32,7 @@ class Game:
         self.asset_manager = game_asset_manager if game_asset_manager else AssetHandler()
         self.game_state_handler = game_state_handler if game_state_handler else StateHandler()
         self.register_system_events()
-        self.game_state_handler.add_states(
+        self.game_state_handler.register_states(
             screen_width=width,
             screen_height=height,
             input_locked=False,
@@ -71,7 +71,7 @@ class Game:
                     for func_name in [
                         "init",
                         "register_events",
-                        "register_states"
+                        "registers_states"
                     ]:
                         if hasattr(module, func_name):
                             print(f"Calling {func_name} for module {module.__name__}")

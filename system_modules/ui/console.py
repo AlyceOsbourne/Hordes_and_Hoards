@@ -116,7 +116,7 @@ def print_to_console(text):
 
 
 def init():
-    sm.add_states(console_view=False)
+    sm.register_states(console_view=False)
 
 
 def render(screen):

@@ -12,14 +12,18 @@ class StateHandler:
 
     # The following two functions are basically the same, but with intent,
     # this is mostly for readability, and to make sure I ah thinking about the flow of code
-    def add_state(self, state_name: str, default_state):
+    def register_state(self, state_name: str, default_state):
         if state_name in self.states:
             raise KeyError(f"State with name {state_name} already exists.")
         self.states[state_name] = default_state
 
-    def add_states(self, **states):
+    def register_states(self, **states):
         for state_name, state in states.items():
-            self.add_state(state_name, state)
+            self.register_state(state_name, state)
+
+    def registers_states(self, func):
+        """decorator for methods that register states, this is just to allow for readability"""
+        self.register_states(**func())
 
     def set_state(self, state_name: str, state):
         if state_name not in self.states:

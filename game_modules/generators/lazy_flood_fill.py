@@ -6,7 +6,7 @@
 #   I have also excluded the 'visited' list, instead just checking for void spaces, this way it can go back and fill
 #       spaces in that had previously not been filled, this just helps to create a less fragmented space which is better
 #       suited to cave generation rather than biome placement.
-
+import math
 import random
 from collections import deque
 from itertools import count
@@ -62,7 +62,9 @@ def lazy_flood_fill(grid: np.ndarray,
                 queue.append(neighbour)
                 chance -= decay_rate
         if increase_entropy_over_time:
-            decay_rate -= (decay_rate * (random.random() * 10))
+            decay_rate -= 0.00001
+            decay_rate = max(min(decay_rate, 99.99999), 0.00001)
+            print(f"decay rate: {decay_rate}")
     return grid
 
 

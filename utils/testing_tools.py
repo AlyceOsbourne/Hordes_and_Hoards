@@ -48,7 +48,7 @@ def time_it(func):
     return wrapper
 
 
-def time_it_min(expected_time):
+def time_it_seconds(expected_time):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):

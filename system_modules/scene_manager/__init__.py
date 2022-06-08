@@ -9,7 +9,7 @@ event_handler, asset_handler, state_handler = game.handles
 
 
 def init():
-    state_handler.add_states(
+    state_handler.register_states(
         current_scene=None,
         loaded_scenes={},
         scene_stack=[],
